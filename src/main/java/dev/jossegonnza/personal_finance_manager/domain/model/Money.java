@@ -1,6 +1,7 @@
 package dev.jossegonnza.personal_finance_manager.domain.model;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Money {
 
@@ -11,14 +12,15 @@ public class Money {
         if (currency == null || currency.trim().isEmpty()) {
             throw new IllegalArgumentException("currency cannot be null or empty");
         }
-        if (amount.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("money amount cannot be negative");
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("money amount cannot be null or negative");
         }
         this.amount = amount;
-        this.currency = currency;
+        this.currency = currency.trim().toUpperCase();
     }
 
     public Money plus(Money other) {
+        Objects.requireNonNull(other, "money to add cannot be null");
         if (!this.currency.equals(other.currency)) {
             throw new IllegalArgumentException("currencies must match");
         }

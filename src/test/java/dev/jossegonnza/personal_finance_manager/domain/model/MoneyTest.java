@@ -26,6 +26,21 @@ public class MoneyTest {
     }
 
     @Test
+    void shouldNotAcceptNullAmount() {
+        //Arrange
+        BigDecimal amount = null;
+        String currency = "EUR";
+
+        //Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Money(amount, currency));
+
+        //Assert
+        assertTrue(exception.getMessage().toLowerCase().contains("null"));
+    }
+
+    @Test
     void shouldNotAcceptNullCurrency() {
         //Arrange
         BigDecimal amount = new BigDecimal("10.00");
@@ -82,5 +97,19 @@ public class MoneyTest {
 
         //Assert
         assertTrue(exception.getMessage().toLowerCase().contains("currencies"));
+    }
+
+    @Test
+    void shouldNotAddNullMoney() {
+        //Arrange
+        Money first = new Money(new BigDecimal("10.00"), "EUR");
+
+        //Act
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> first.plus(null));
+
+        //Assert
+        assertTrue(exception.getMessage().toLowerCase().contains("null"));
     }
 }
