@@ -31,6 +31,8 @@ public class RegisterTransactionService implements RegisterTransactionUseCase {
                 command.description(),
                 command.occurredAt());
 
+        transactionRepository.save(transaction);
+
         return transaction;
     }
 }
