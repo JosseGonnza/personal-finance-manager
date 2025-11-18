@@ -4,6 +4,7 @@ import dev.jossegonnza.personal_finance_manager.application.port.in.RegisterTran
 import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
 import dev.jossegonnza.personal_finance_manager.application.port.out.TransactionRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -35,26 +36,37 @@ public class RegisterTransactionServiceTest {
             storage.add(transaction);
         }
 
-        @Override
         public List<Transaction> findAll() {
             return Collections.unmodifiableList(storage);
         }
     }
 
-    @Test
-    void shouldRegisterIncome() {
-        //Arrange
-        InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
-        InMemoryTransactionRepository transactionRepository = new InMemoryTransactionRepository();
+    private InMemoryAccountRepository accountRepository;
+    private InMemoryTransactionRepository transactionRepository;
+    private RegisterTransactionService service;
+    private Account existingAccount;
 
-        Account existingAccount = new Account(UUID.randomUUID(), "Personal", CurrencyType.EUR);
+    @BeforeEach
+    void setUp() {
+        accountRepository = new InMemoryAccountRepository();
+        transactionRepository = new InMemoryTransactionRepository();
+
+        existingAccount = new Account(
+                UUID.randomUUID(),
+                "Personal",
+                CurrencyType.EUR
+        );
         accountRepository.save(existingAccount);
 
-        RegisterTransactionService service = new RegisterTransactionService(
+        service = new RegisterTransactionService(
                 accountRepository,
                 transactionRepository
         );
+    }
 
+    @Test
+    void shouldRegisterIncome() {
+        //Arrange
         RegisterTransactionCommand command = new RegisterTransactionCommand(
                 existingAccount.id(),
                 TransactionType.INCOME,
@@ -79,17 +91,6 @@ public class RegisterTransactionServiceTest {
     @Test
     void shouldAddTransactionWhenRegisterIncome() {
         //Arrange
-        InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
-        InMemoryTransactionRepository transactionRepository = new InMemoryTransactionRepository();
-
-        Account existingAccount = new Account(UUID.randomUUID(), "Personal", CurrencyType.EUR);
-        accountRepository.save(existingAccount);
-
-        RegisterTransactionService service = new RegisterTransactionService(
-                accountRepository,
-                transactionRepository
-        );
-
         RegisterTransactionCommand command = new RegisterTransactionCommand(
                 existingAccount.id(),
                 TransactionType.INCOME,
@@ -111,17 +112,6 @@ public class RegisterTransactionServiceTest {
     @Test
     void shouldUpdateAccountBalance() {
         //Arrange
-        InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
-        InMemoryTransactionRepository transactionRepository = new InMemoryTransactionRepository();
-
-        Account existingAccount = new Account(UUID.randomUUID(), "Personal", CurrencyType.EUR);
-        accountRepository.save(existingAccount);
-
-        RegisterTransactionService service = new RegisterTransactionService(
-                accountRepository,
-                transactionRepository
-        );
-
         RegisterTransactionCommand command = new RegisterTransactionCommand(
                 existingAccount.id(),
                 TransactionType.INCOME,
@@ -141,19 +131,8 @@ public class RegisterTransactionServiceTest {
     }
 
     @Test
-    void shouldAddTransactionWhenRegisterExpense() {
+    void shouldUpdateBalanceWhenRegisterExpense() {
         //Arrange
-        InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
-        InMemoryTransactionRepository transactionRepository = new InMemoryTransactionRepository();
-
-        Account existingAccount = new Account(UUID.randomUUID(), "Personal", CurrencyType.EUR);
-        accountRepository.save(existingAccount);
-
-        RegisterTransactionService service = new RegisterTransactionService(
-                accountRepository,
-                transactionRepository
-        );
-
         RegisterTransactionCommand commandIncome = new RegisterTransactionCommand(
                 existingAccount.id(),
                 TransactionType.INCOME,
@@ -181,5 +160,8 @@ public class RegisterTransactionServiceTest {
         //Assert
         assertEquals(new Money(new BigDecimal("1.00"), CurrencyType.EUR),
                 accountRepository.findById(commandExpense.accountId()).orElseThrow().balance());
+        assertEquals(TransactionType.EXPENSE, commandExpense.type());
+        assertEquals(new BigDecimal("999.00"), commandExpense.amount());
+        assertEquals("New Laptop", commandExpense.description());
     }
 }
