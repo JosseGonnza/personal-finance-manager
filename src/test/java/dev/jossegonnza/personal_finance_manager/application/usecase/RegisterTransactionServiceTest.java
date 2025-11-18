@@ -139,4 +139,47 @@ public class RegisterTransactionServiceTest {
         assertEquals(new Money(new BigDecimal("1000.00"), CurrencyType.EUR),
                 accountRepository.findById(command.accountId()).orElseThrow().balance());
     }
+
+    @Test
+    void shouldAddTransactionWhenRegisterExpense() {
+        //Arrange
+        InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
+        InMemoryTransactionRepository transactionRepository = new InMemoryTransactionRepository();
+
+        Account existingAccount = new Account(UUID.randomUUID(), "Personal", CurrencyType.EUR);
+        accountRepository.save(existingAccount);
+
+        RegisterTransactionService service = new RegisterTransactionService(
+                accountRepository,
+                transactionRepository
+        );
+
+        RegisterTransactionCommand commandIncome = new RegisterTransactionCommand(
+                existingAccount.id(),
+                TransactionType.INCOME,
+                new BigDecimal("1000.00"),
+                CurrencyType.EUR,
+                null,
+                "Salary",
+                LocalDateTime.of(2025, 2, 8, 10, 25)
+        );
+
+        RegisterTransactionCommand commandExpense = new RegisterTransactionCommand(
+                existingAccount.id(),
+                TransactionType.EXPENSE,
+                new BigDecimal("999.00"),
+                CurrencyType.EUR,
+                null,
+                "New Laptop",
+                LocalDateTime.of(2025, 2, 8, 10, 25)
+        );
+        Transaction transactionIncome = service.register(commandIncome);
+
+        //Act
+        Transaction transactionExpense = service.register(commandExpense);
+
+        //Assert
+        assertEquals(new Money(new BigDecimal("1.00"), CurrencyType.EUR),
+                accountRepository.findById(commandExpense.accountId()).orElseThrow().balance());
+    }
 }

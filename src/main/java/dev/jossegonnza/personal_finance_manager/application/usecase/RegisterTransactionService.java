@@ -7,8 +7,7 @@ import dev.jossegonnza.personal_finance_manager.application.port.out.Transaction
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.domain.model.Money;
 import dev.jossegonnza.personal_finance_manager.domain.model.Transaction;
-
-import java.math.BigDecimal;
+import dev.jossegonnza.personal_finance_manager.domain.model.TransactionType;
 
 public class RegisterTransactionService implements RegisterTransactionUseCase {
     private final AccountRepository accountRepository;
@@ -25,12 +24,24 @@ public class RegisterTransactionService implements RegisterTransactionUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("account not found: " + command.accountId()));
         Money money = new Money(command.amount(), command.currency());
 
-        Transaction transaction = account.registerIncome(
-                money,
-                command.categoryId(),
-                command.description(),
-                command.occurredAt());
+        Transaction transaction;
+        if (command.type() == TransactionType.INCOME){
+            transaction = account.registerIncome(
+                    money,
+                    command.categoryId(),
+                    command.description(),
+                    command.occurredAt());
+        } else if (command.type() == TransactionType.EXPENSE) {
+            transaction = account.registerExpense(
+                    money,
+                    command.categoryId(),
+                    command.description(),
+                    command.occurredAt());
+        } else {
+            throw new IllegalArgumentException("unsupported transaction type: " + command.type());
+        }
 
+        accountRepository.save(account);
         transactionRepository.save(transaction);
 
         return transaction;
