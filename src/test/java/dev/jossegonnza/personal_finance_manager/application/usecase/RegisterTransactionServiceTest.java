@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RegisterTransactionServiceTest {
     static class InMemoryAccountRepository implements AccountRepository {
@@ -74,7 +74,7 @@ public class RegisterTransactionServiceTest {
                 CurrencyType.EUR,
                 null,
                 "Salary",
-                LocalDateTime.of(2025, 2, 8, 10, 25)
+                LocalDateTime.of(2025, 3, 8, 10, 25)
         );
 
         //Act
@@ -85,7 +85,7 @@ public class RegisterTransactionServiceTest {
         assertEquals(TransactionType.INCOME, transaction.type());
         assertEquals(new Money(new BigDecimal("1000.00"), CurrencyType.EUR), transaction.amount());
         assertEquals("Salary", transaction.description());
-        assertEquals(LocalDateTime.of(2025, 2, 8, 10, 25), transaction.occurredAt());
+        assertEquals(LocalDateTime.of(2025, 3, 8, 10, 25), transaction.occurredAt());
     }
 
     @Test
@@ -160,8 +160,31 @@ public class RegisterTransactionServiceTest {
         //Assert
         assertEquals(new Money(new BigDecimal("1.00"), CurrencyType.EUR),
                 accountRepository.findById(commandExpense.accountId()).orElseThrow().balance());
-        assertEquals(TransactionType.EXPENSE, commandExpense.type());
-        assertEquals(new BigDecimal("999.00"), commandExpense.amount());
-        assertEquals("New Laptop", commandExpense.description());
+        assertEquals(TransactionType.EXPENSE, transactionExpense.type());
+        assertEquals(new Money(new BigDecimal("999.00"), CurrencyType.EUR), transactionExpense.amount());
+        assertEquals("New Laptop", transactionExpense.description());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAccountNotFound() {
+        //Arrange
+        RegisterTransactionCommand command = new RegisterTransactionCommand(
+                UUID.randomUUID(),
+                null,
+                new BigDecimal("1000.00"),
+                CurrencyType.EUR,
+                null,
+                "Salary",
+                LocalDateTime.of(2025, 2, 8, 10, 25)
+        );
+
+        //Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> service.register(command)
+        );
+
+        //Assert
+        assertTrue(exception.getMessage().contains("not found"));
     }
 }
