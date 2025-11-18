@@ -15,7 +15,7 @@ public class TransactionTest {
         //Arrange
         UUID accountId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
-        Money amount = new Money(new BigDecimal("50.00"), "EUR");
+        Money amount = new Money(new BigDecimal("50.00"), CurrencyType.EUR);
         String description = "Dinner at restaurant for birthday";
         LocalDateTime occurredAt = LocalDateTime.of(2025, 2, 8, 20, 30);
 
@@ -43,7 +43,7 @@ public class TransactionTest {
     void shouldNotAllowDescriptionLongerThan200Characters() {
         //Arrange
         UUID accountId = UUID.randomUUID();
-        Money amount = new Money(new BigDecimal("10.00"), "EUR");
+        Money amount = new Money(new BigDecimal("10.00"), CurrencyType.EUR);
         String description = "a".repeat(201);
         LocalDateTime occurredAt = LocalDateTime.now();
 
@@ -67,7 +67,7 @@ public class TransactionTest {
     @Test
     void shouldNotAcceptNullAccountId() {
         //Arrange
-        Money amount = new Money(new BigDecimal("50.00"), "EUR");
+        Money amount = new Money(new BigDecimal("50.00"), CurrencyType.EUR);
         String description = "Dinner at restaurant for birthday";
         LocalDateTime occurredAt = LocalDateTime.of(2025, 2, 8, 20, 30);
 
@@ -92,7 +92,7 @@ public class TransactionTest {
     void shouldNotAcceptNullTransactionType() {
         //Arrange
         UUID accountId = UUID.randomUUID();
-        Money amount = new Money(new BigDecimal("50.00"), "EUR");
+        Money amount = new Money(new BigDecimal("50.00"), CurrencyType.EUR);
         String description = "Dinner at restaurant for birthday";
         LocalDateTime occurredAt = LocalDateTime.of(2025, 2, 8, 20, 30);
 
@@ -141,7 +141,7 @@ public class TransactionTest {
     void shouldNotAcceptNullOccurredAt() {
         //Arrange
         UUID accountId = UUID.randomUUID();
-        Money amount = new Money(new BigDecimal("50.00"), "EUR");
+        Money amount = new Money(new BigDecimal("50.00"), CurrencyType.EUR);
         String description = "Dinner at restaurant for birthday";
 
         //Act
