@@ -25,6 +25,18 @@ public class Money {
         return new Money(newAmount, this.currencyType);
     }
 
+    public Money minus(Money other) {
+        Objects.requireNonNull(other, "money to subtract cannot be null");
+        if (!this.currencyType.equals(other.currencyType)) {
+            throw new IllegalArgumentException("currencies must match");
+        }
+        BigDecimal newAmount = this.amount.subtract(other.amount);
+        if (newAmount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("resulting money amount cannot be negative");
+        }
+        return new Money(newAmount, this.currencyType);
+    }
+
     public BigDecimal amount() {
         return amount;
     }
@@ -35,14 +47,15 @@ public class Money {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Money money = (Money) o;
-        return Objects.equals(amount, money.amount) && currencyType == money.currencyType;
+        if (this == o) return true;
+        if (!(o instanceof Money money)) return false;
+        return amount.compareTo(money.amount) == 0 &&
+                currencyType == money.currencyType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(amount, currencyType);
+        return Objects.hash(amount.stripTrailingZeros(), currencyType);
     }
 
     @Override

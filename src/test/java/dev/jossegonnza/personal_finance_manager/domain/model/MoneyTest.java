@@ -94,4 +94,51 @@ public class MoneyTest {
         //Assert
         assertTrue(exception.getMessage().toLowerCase().contains("null"));
     }
+
+    @Test
+    void shouldSubtractMoneyWithSameCurrency() {
+        //Arrange
+        Money first = new Money(new BigDecimal("20.00"), CurrencyType.EUR);
+        Money second = new Money(new BigDecimal("5.00"), CurrencyType.EUR);
+
+        //Act
+        Money result = first.minus(second);
+
+        //Assert
+        assertEquals(new BigDecimal("15.00"), result.amount());
+        assertEquals(CurrencyType.EUR, result.type());
+    }
+
+    @Test
+    void shouldNotSubtractMoneyWithDifferentCurrency() {
+        //Arrange
+        Money first = new Money(new BigDecimal("20.00"), CurrencyType.EUR);
+        Money second = new Money(new BigDecimal("5.00"), CurrencyType.USD);
+
+        //Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> first.minus(second)
+        );
+
+        //Assert
+        assertTrue(exception.getMessage().toLowerCase().contains("currencies"));
+    }
+
+    @Test
+    void shouldNotAllowSubtractionResultingInNegativeAmount() {
+        //Arrange
+        Money first = new Money(new BigDecimal("5.00"), CurrencyType.EUR);
+        Money second = new Money(new BigDecimal("10.00"), CurrencyType.EUR);
+
+        //Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> first.minus(second)
+        );
+
+        //Assert
+        assertTrue(exception.getMessage().toLowerCase().contains("negative"));
+    }
+
 }
