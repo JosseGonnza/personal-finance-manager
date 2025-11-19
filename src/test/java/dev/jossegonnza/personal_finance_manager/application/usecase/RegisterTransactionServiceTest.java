@@ -1,5 +1,6 @@
 package dev.jossegonnza.personal_finance_manager.application.usecase;
 
+import dev.jossegonnza.personal_finance_manager.application.exception.AccountNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.RegisterTransactionCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
 import dev.jossegonnza.personal_finance_manager.application.port.out.TransactionRepository;
@@ -65,7 +66,7 @@ public class RegisterTransactionServiceTest {
     }
 
     @Test
-    void shouldRegisterIncome() {
+    void shouldRegisterIncome() throws AccountNotFoundException {
         //Arrange
         RegisterTransactionCommand command = new RegisterTransactionCommand(
                 existingAccount.id(),
@@ -89,7 +90,7 @@ public class RegisterTransactionServiceTest {
     }
 
     @Test
-    void shouldAddTransactionWhenRegisterIncome() {
+    void shouldAddTransactionWhenRegisterIncome() throws AccountNotFoundException {
         //Arrange
         RegisterTransactionCommand command = new RegisterTransactionCommand(
                 existingAccount.id(),
@@ -110,7 +111,7 @@ public class RegisterTransactionServiceTest {
     }
 
     @Test
-    void shouldUpdateAccountBalance() {
+    void shouldUpdateAccountBalance() throws AccountNotFoundException {
         //Arrange
         RegisterTransactionCommand command = new RegisterTransactionCommand(
                 existingAccount.id(),
@@ -131,7 +132,7 @@ public class RegisterTransactionServiceTest {
     }
 
     @Test
-    void shouldUpdateBalanceWhenRegisterExpense() {
+    void shouldUpdateBalanceWhenRegisterExpense() throws AccountNotFoundException {
         //Arrange
         RegisterTransactionCommand commandIncome = new RegisterTransactionCommand(
                 existingAccount.id(),
@@ -179,8 +180,8 @@ public class RegisterTransactionServiceTest {
         );
 
         //Act
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        AccountNotFoundException exception = assertThrows(
+                AccountNotFoundException.class,
                 () -> service.register(command)
         );
 

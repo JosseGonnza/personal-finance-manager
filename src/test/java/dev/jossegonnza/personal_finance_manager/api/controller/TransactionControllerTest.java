@@ -1,13 +1,12 @@
 package dev.jossegonnza.personal_finance_manager.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jossegonnza.personal_finance_manager.api.dto.RegisterTransactionRequest;
+import dev.jossegonnza.personal_finance_manager.application.exception.AccountNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.RegisterTransactionCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.RegisterTransactionUseCase;
-import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
-import dev.jossegonnza.personal_finance_manager.domain.model.Money;
-import dev.jossegonnza.personal_finance_manager.domain.model.Transaction;
-import dev.jossegonnza.personal_finance_manager.domain.model.TransactionType;
+import dev.jossegonnza.personal_finance_manager.domain.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,7 +36,7 @@ public class TransactionControllerTest {
     private RegisterTransactionUseCase registerTransactionUseCase;
 
     @Test
-    void shouldReturn201WhenCreateTransaction() throws Exception {
+    void shouldReturn201WhenCreateTransaction() throws AccountNotFoundException, Exception {
         //Arrange
         UUID accountId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
@@ -81,5 +80,34 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.categoryId").value(categoryId.toString()))
                 .andExpect(jsonPath("$.description").value("Salary"))
                 .andExpect(jsonPath("$.occurredAt").value("2025-02-08T10:30:00"));
+    }
+
+    @Test
+    void shouldReturn404WhenAccountNotFound() throws AccountNotFoundException, Exception {
+        //Arrange
+        UUID accountId = UUID.randomUUID();
+        UUID categoryId = UUID.randomUUID();
+
+        RegisterTransactionRequest request = new RegisterTransactionRequest(
+                accountId,
+                TransactionType.INCOME,
+                new BigDecimal("1000.00"),
+                CurrencyType.EUR,
+                categoryId,
+                "Salary",
+                LocalDateTime.of(2025, 2, 8, 10, 30)
+        );
+
+        when(registerTransactionUseCase.register(any(RegisterTransactionCommand.class)))
+                .thenThrow(new AccountNotFoundException(accountId));
+
+        //Act + Assert
+        mockMvc.perform(post("/api/transactions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("ACCOUNT_NOT_FOUND"))
+                .andExpect(jsonPath("$.message").exists());
     }
 }

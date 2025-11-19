@@ -2,6 +2,7 @@ package dev.jossegonnza.personal_finance_manager.api.controller;
 
 import dev.jossegonnza.personal_finance_manager.api.dto.RegisterTransactionRequest;
 import dev.jossegonnza.personal_finance_manager.api.dto.TransactionResponse;
+import dev.jossegonnza.personal_finance_manager.application.exception.AccountNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.RegisterTransactionCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.RegisterTransactionUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Transaction;
@@ -22,7 +23,7 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<TransactionResponse> create(@RequestBody RegisterTransactionRequest request) {
+    public ResponseEntity<TransactionResponse> create(@RequestBody RegisterTransactionRequest request) throws AccountNotFoundException {
         RegisterTransactionCommand command = new RegisterTransactionCommand(
                 request.accountId(),
                 request.type(),

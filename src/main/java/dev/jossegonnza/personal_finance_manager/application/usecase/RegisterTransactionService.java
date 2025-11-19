@@ -1,5 +1,6 @@
 package dev.jossegonnza.personal_finance_manager.application.usecase;
 
+import dev.jossegonnza.personal_finance_manager.application.exception.AccountNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.RegisterTransactionCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.RegisterTransactionUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
@@ -19,9 +20,9 @@ public class RegisterTransactionService implements RegisterTransactionUseCase {
     }
 
     @Override
-    public Transaction register(RegisterTransactionCommand command) {
+    public Transaction register(RegisterTransactionCommand command) throws AccountNotFoundException {
         Account account = accountRepository.findById(command.accountId())
-                .orElseThrow(() -> new IllegalArgumentException("account not found: " + command.accountId()));
+                .orElseThrow(() -> new AccountNotFoundException(command.accountId()));
         Money money = new Money(command.amount(), command.currency());
 
         Transaction transaction;
