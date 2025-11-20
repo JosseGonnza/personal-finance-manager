@@ -2,7 +2,7 @@ package dev.jossegonnza.personal_finance_manager.application.exception;
 
 import java.util.UUID;
 
-public class AccountNotFoundException extends Throwable {
+public class AccountNotFoundException extends RuntimeException {
     private final UUID accountId;
 
     public AccountNotFoundException(UUID accountId) {
