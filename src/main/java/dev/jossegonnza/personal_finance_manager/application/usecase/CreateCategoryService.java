@@ -4,7 +4,9 @@ import dev.jossegonnza.personal_finance_manager.application.port.in.CreateCatego
 import dev.jossegonnza.personal_finance_manager.application.port.in.CreateCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.out.CategoryRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CreateCategoryService implements CreateCategoryUseCase {
     private final CategoryRepository categoryRepository;
 

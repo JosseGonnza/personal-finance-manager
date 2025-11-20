@@ -9,7 +9,9 @@ import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.domain.model.Money;
 import dev.jossegonnza.personal_finance_manager.domain.model.Transaction;
 import dev.jossegonnza.personal_finance_manager.domain.model.TransactionType;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RegisterTransactionService implements RegisterTransactionUseCase {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;

@@ -4,6 +4,7 @@ import dev.jossegonnza.personal_finance_manager.application.port.in.CreateCatego
 import dev.jossegonnza.personal_finance_manager.application.port.out.CategoryRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryKind;
+import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryCategoryRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -14,19 +15,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CreateCategoryServiceTest {
-    static class InMemoryCategoryRepository implements CategoryRepository {
-        private final Map<UUID, Category> storage = new HashMap<>();
-
-        @Override
-        public Optional<Category> findById(UUID categoryId) {
-            return Optional.ofNullable(storage.get(categoryId));
-        }
-
-        @Override
-        public void save(Category category) {
-            storage.put(category.id(), category);
-        }
-    }
 
     @Test
     void shouldCreateCategory() {

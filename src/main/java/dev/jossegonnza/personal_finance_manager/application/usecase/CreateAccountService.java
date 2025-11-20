@@ -4,7 +4,9 @@ import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccoun
 import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CreateAccountService implements CreateAccountUseCase {
     private final AccountRepository accountRepository;
 

@@ -5,6 +5,8 @@ import dev.jossegonnza.personal_finance_manager.application.port.in.RegisterTran
 import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
 import dev.jossegonnza.personal_finance_manager.application.port.out.TransactionRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.*;
+import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryAccountRepository;
+import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryTransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,32 +17,6 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RegisterTransactionServiceTest {
-    static class InMemoryAccountRepository implements AccountRepository {
-        private final Map<UUID, Account> storage = new HashMap<>();
-
-        @Override
-        public Optional<Account> findById(UUID accountId) {
-            return Optional.ofNullable(storage.get(accountId));
-        }
-
-        @Override
-        public void save(Account account) {
-            storage.put(account.id(), account);
-        }
-    }
-
-    static class InMemoryTransactionRepository implements TransactionRepository {
-        private final List<Transaction> storage = new ArrayList<>();
-
-        @Override
-        public void save(Transaction transaction) {
-            storage.add(transaction);
-        }
-
-        public List<Transaction> findAll() {
-            return Collections.unmodifiableList(storage);
-        }
-    }
 
     private InMemoryAccountRepository accountRepository;
     private InMemoryTransactionRepository transactionRepository;

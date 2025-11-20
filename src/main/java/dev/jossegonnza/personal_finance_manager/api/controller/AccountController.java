@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/accounts")
 public class AccountController {
 
-    private CreateAccountUseCase createAccountUseCase;
+    private final CreateAccountUseCase createAccountUseCase;
 
     public AccountController(CreateAccountUseCase createAccountUseCase) {
         this.createAccountUseCase = createAccountUseCase;
