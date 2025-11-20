@@ -2,7 +2,6 @@ package dev.jossegonnza.personal_finance_manager.api.dto;
 
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
-import dev.jossegonnza.personal_finance_manager.domain.model.Money;
 
 import java.math.BigDecimal;
 import java.util.UUID;

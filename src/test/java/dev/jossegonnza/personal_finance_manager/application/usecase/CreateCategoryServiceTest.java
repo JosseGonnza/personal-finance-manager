@@ -5,7 +5,6 @@ import dev.jossegonnza.personal_finance_manager.application.port.out.CategoryRep
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryKind;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;

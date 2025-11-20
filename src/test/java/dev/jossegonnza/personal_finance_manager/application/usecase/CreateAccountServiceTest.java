@@ -5,7 +5,6 @@ import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepo
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
 import dev.jossegonnza.personal_finance_manager.domain.model.Money;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

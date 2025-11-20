@@ -1,6 +1,5 @@
 package dev.jossegonnza.personal_finance_manager.api.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jossegonnza.personal_finance_manager.api.dto.CreateAccountRequest;
 import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountCommand;

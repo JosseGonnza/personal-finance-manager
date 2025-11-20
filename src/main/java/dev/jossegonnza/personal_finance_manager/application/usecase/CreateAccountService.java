@@ -3,7 +3,6 @@ package dev.jossegonnza.personal_finance_manager.application.usecase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
-import dev.jossegonnza.personal_finance_manager.application.port.out.TransactionRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 
 public class CreateAccountService implements CreateAccountUseCase {
