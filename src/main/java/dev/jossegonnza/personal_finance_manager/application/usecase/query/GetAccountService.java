@@ -5,9 +5,11 @@ import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetAcc
 import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryAccountRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Service
 public class GetAccountService implements GetAccountUseCase {
     private final AccountRepository accountRepository;
 

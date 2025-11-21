@@ -2,8 +2,10 @@ package dev.jossegonnza.personal_finance_manager.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jossegonnza.personal_finance_manager.api.dto.CreateAccountRequest;
+import dev.jossegonnza.personal_finance_manager.application.exception.AccountNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetAccountUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AccountController.class)
@@ -31,6 +34,9 @@ public class AccountControllerTest {
 
     @MockitoBean
     private CreateAccountUseCase createAccountUseCase;
+
+    @MockitoBean
+    private GetAccountUseCase getAccountUseCase;
 
     @Test
     void shouldReturn201WhenCreateAccount() throws Exception {
@@ -63,5 +69,46 @@ public class AccountControllerTest {
                 .andExpect(jsonPath("$.name").value("Personal"))
                 .andExpect(jsonPath("$.currency").value("EUR"))
                 .andExpect(jsonPath("$.balance").value(0.00));
+    }
+
+    @Test
+    void shouldReturn200WhenAccountExist() throws Exception {
+        //Arrange
+        UUID accountId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        Account account = new Account(
+                userId,
+                "Personal",
+                CurrencyType.EUR
+        );
+
+        when(getAccountUseCase.getById(account.id()))
+                .thenReturn(account);
+
+        //Act + Assert
+        mockMvc.perform(get("/api/accounts/{id}", account.id()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(account.id().toString()))
+                .andExpect(jsonPath("$.userId").value(account.userId().toString()))
+                .andExpect(jsonPath("$.name").value("Personal"))
+                .andExpect(jsonPath("$.currency").value("EUR"))
+                .andExpect(jsonPath("$.balance").value(0.00));
+    }
+
+    @Test
+    void shouldReturn404WhenAccountNotFound() throws Exception {
+        // Arrange
+        UUID unknownId = UUID.randomUUID();
+
+        when(getAccountUseCase.getById(unknownId))
+                .thenThrow(new AccountNotFoundException(unknownId));
+
+        // Act + Assert
+        mockMvc.perform(get("/api/accounts/{id}", unknownId))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("ACCOUNT_NOT_FOUND"))
+                .andExpect(jsonPath("$.message").exists());
     }
 }
