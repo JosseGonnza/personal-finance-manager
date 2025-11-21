@@ -3,12 +3,12 @@ package dev.jossegonnza.personal_finance_manager.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jossegonnza.personal_finance_manager.api.dto.RegisterTransactionRequest;
 import dev.jossegonnza.personal_finance_manager.application.exception.AccountNotFoundException;
+import dev.jossegonnza.personal_finance_manager.application.exception.CategoryNotFoundException;
+import dev.jossegonnza.personal_finance_manager.application.exception.TransactionNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.RegisterTransactionCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.RegisterTransactionUseCase;
-import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
-import dev.jossegonnza.personal_finance_manager.domain.model.Money;
-import dev.jossegonnza.personal_finance_manager.domain.model.Transaction;
-import dev.jossegonnza.personal_finance_manager.domain.model.TransactionType;
+import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetTransactionUseCase;
+import dev.jossegonnza.personal_finance_manager.domain.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -36,6 +37,9 @@ public class TransactionControllerTest {
 
     @MockitoBean
     private RegisterTransactionUseCase registerTransactionUseCase;
+
+    @MockitoBean
+    private GetTransactionUseCase getTransactionUseCase;
 
     @Test
     void shouldReturn201WhenCreateTransaction() throws AccountNotFoundException, Exception {
@@ -110,6 +114,51 @@ public class TransactionControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.error").value("ACCOUNT_NOT_FOUND"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void shouldReturn200WhenTransactionExist() throws Exception {
+        //Arrange
+        UUID accountId = UUID.randomUUID();
+        Transaction transaction = new Transaction(
+                accountId,
+                TransactionType.INCOME,
+                new Money(new BigDecimal("1000.00"), CurrencyType.EUR),
+                UUID.randomUUID(),
+                "Salary",
+                LocalDateTime.of(2025, 2, 8, 10, 30)
+        );
+
+        when(getTransactionUseCase.getById(transaction.id()))
+                .thenReturn(transaction);
+
+        //Act + Assert
+        mockMvc.perform(get("/api/transactions/{id}", transaction.id()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(transaction.id().toString()))
+                .andExpect(jsonPath("$.accountId").value(accountId.toString()))
+                .andExpect(jsonPath("$.type").value("INCOME"))
+                .andExpect(jsonPath("$.amount").value(1000.00))
+                .andExpect(jsonPath("$.currency").value("EUR"))
+                .andExpect(jsonPath("$.categoryId").value(transaction.categoryId().toString()))
+                .andExpect(jsonPath("$.description").value("Salary"))
+                .andExpect(jsonPath("$.occurredAt").value("2025-02-08T10:30:00"));
+    }
+
+    @Test
+    void shouldReturn404WhenTransactionNotFound() throws Exception {
+        // Arrange
+        UUID unknownId = UUID.randomUUID();
+
+        when(getTransactionUseCase.getById(unknownId))
+                .thenThrow(new TransactionNotFoundException(unknownId));
+
+        // Act + Assert
+        mockMvc.perform(get("/api/transactions/{id}", unknownId))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("TRANSACTION_NOT_FOUND"))
                 .andExpect(jsonPath("$.message").exists());
     }
 }
