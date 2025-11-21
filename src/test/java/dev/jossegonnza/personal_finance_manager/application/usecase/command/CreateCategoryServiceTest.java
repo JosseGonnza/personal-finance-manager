@@ -1,15 +1,11 @@
-package dev.jossegonnza.personal_finance_manager.application.usecase;
+package dev.jossegonnza.personal_finance_manager.application.usecase.command;
 
-import dev.jossegonnza.personal_finance_manager.application.port.in.CreateCategoryCommand;
-import dev.jossegonnza.personal_finance_manager.application.port.out.CategoryRepository;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryCommand;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryKind;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryCategoryRepository;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;

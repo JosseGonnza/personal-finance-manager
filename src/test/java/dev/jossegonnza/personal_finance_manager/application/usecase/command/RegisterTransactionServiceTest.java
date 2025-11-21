@@ -1,9 +1,7 @@
-package dev.jossegonnza.personal_finance_manager.application.usecase;
+package dev.jossegonnza.personal_finance_manager.application.usecase.command;
 
 import dev.jossegonnza.personal_finance_manager.application.exception.AccountNotFoundException;
-import dev.jossegonnza.personal_finance_manager.application.port.in.RegisterTransactionCommand;
-import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
-import dev.jossegonnza.personal_finance_manager.application.port.out.TransactionRepository;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.RegisterTransactionCommand;
 import dev.jossegonnza.personal_finance_manager.domain.model.*;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryAccountRepository;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryTransactionRepository;

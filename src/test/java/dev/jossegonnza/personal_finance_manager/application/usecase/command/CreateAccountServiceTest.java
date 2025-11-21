@@ -1,6 +1,6 @@
-package dev.jossegonnza.personal_finance_manager.application.usecase;
+package dev.jossegonnza.personal_finance_manager.application.usecase.command;
 
-import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountCommand;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountCommand;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
 import dev.jossegonnza.personal_finance_manager.domain.model.Money;

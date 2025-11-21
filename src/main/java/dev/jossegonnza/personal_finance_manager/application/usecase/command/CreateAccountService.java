@@ -1,7 +1,7 @@
-package dev.jossegonnza.personal_finance_manager.application.usecase;
+package dev.jossegonnza.personal_finance_manager.application.usecase.command;
 
-import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountCommand;
-import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountCommand;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import org.springframework.stereotype.Service;

@@ -2,8 +2,8 @@ package dev.jossegonnza.personal_finance_manager.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jossegonnza.personal_finance_manager.api.dto.CreateAccountRequest;
-import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountCommand;
-import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountCommand;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
 import org.junit.jupiter.api.Test;

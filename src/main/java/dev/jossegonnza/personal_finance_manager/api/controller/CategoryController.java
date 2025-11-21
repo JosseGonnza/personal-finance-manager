@@ -2,8 +2,8 @@ package dev.jossegonnza.personal_finance_manager.api.controller;
 
 import dev.jossegonnza.personal_finance_manager.api.dto.CategoryResponse;
 import dev.jossegonnza.personal_finance_manager.api.dto.CreateCategoryRequest;
-import dev.jossegonnza.personal_finance_manager.application.port.in.CreateCategoryCommand;
-import dev.jossegonnza.personal_finance_manager.application.port.in.CreateCategoryUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryCommand;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

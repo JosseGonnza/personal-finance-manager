@@ -2,8 +2,8 @@ package dev.jossegonnza.personal_finance_manager.api.controller;
 
 import dev.jossegonnza.personal_finance_manager.api.dto.AccountResponse;
 import dev.jossegonnza.personal_finance_manager.api.dto.CreateAccountRequest;
-import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountCommand;
-import dev.jossegonnza.personal_finance_manager.application.port.in.CreateAccountUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountCommand;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
