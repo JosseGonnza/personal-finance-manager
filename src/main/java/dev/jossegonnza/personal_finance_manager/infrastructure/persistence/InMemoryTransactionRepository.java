@@ -6,6 +6,7 @@ import dev.jossegonnza.personal_finance_manager.domain.model.Transaction;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryTransactionRepository implements TransactionRepository {
@@ -22,7 +23,15 @@ public class InMemoryTransactionRepository implements TransactionRepository {
         storage.put(transaction.id(), transaction);
     }
 
+    @Override
     public List<Transaction> findAll() {
         return List.copyOf(storage.values());
+    }
+
+    @Override
+    public List<Transaction> findAllByAccountId(UUID accountId) {
+        return storage.values().stream()
+                .filter(transaction -> transaction.accountId().equals(accountId))
+                .toList();
     }
 }
