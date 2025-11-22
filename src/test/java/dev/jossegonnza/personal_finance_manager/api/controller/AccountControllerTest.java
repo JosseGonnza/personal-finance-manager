@@ -5,9 +5,9 @@ import dev.jossegonnza.personal_finance_manager.api.dto.CreateAccountRequest;
 import dev.jossegonnza.personal_finance_manager.application.exception.AccountNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetAccountTransactionsUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetAccountUseCase;
-import dev.jossegonnza.personal_finance_manager.domain.model.Account;
-import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
+import dev.jossegonnza.personal_finance_manager.domain.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,6 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +40,9 @@ public class AccountControllerTest {
 
     @MockitoBean
     private GetAccountUseCase getAccountUseCase;
+
+    @MockitoBean
+    private GetAccountTransactionsUseCase getAccountTransactionsUseCase;
 
     @Test
     void shouldReturn201WhenCreateAccount() throws Exception {
@@ -74,7 +80,6 @@ public class AccountControllerTest {
     @Test
     void shouldReturn200WhenAccountExist() throws Exception {
         //Arrange
-        UUID accountId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         Account account = new Account(
                 userId,
@@ -110,5 +115,71 @@ public class AccountControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.error").value("ACCOUNT_NOT_FOUND"))
                 .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void shouldReturn200WhenAccountHasTransactions() throws Exception {
+        //Arrange
+        UUID accountId = UUID.randomUUID();
+        UUID categoryId1 = UUID.randomUUID();
+        UUID categoryId2 = UUID.randomUUID();
+
+        Transaction transaction1 = new Transaction(
+                accountId,
+                TransactionType.INCOME,
+                new Money(new BigDecimal("50.00"), CurrencyType.EUR),
+                categoryId1,
+                "Extras",
+                LocalDateTime.of(2025, 2, 8, 10, 30)
+        );
+        Transaction transaction2 = new Transaction(
+                accountId,
+                TransactionType.EXPENSE,
+                new Money(new BigDecimal("25.00"), CurrencyType.EUR),
+                categoryId2,
+                "Dinner",
+                LocalDateTime.of(2025, 2, 8, 11, 30)
+        );
+
+        when(getAccountTransactionsUseCase.getByAccountId(accountId))
+                .thenReturn(List.of(transaction1, transaction2));
+
+        //Act + Assert
+        mockMvc.perform(get("/api/accounts/{accountId}/transactions", accountId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                .andExpect(jsonPath("$[0].id").value(transaction1.id().toString()))
+                .andExpect(jsonPath("$[0].accountId").value(accountId.toString()))
+                .andExpect(jsonPath("$[0].type").value("INCOME"))
+                .andExpect(jsonPath("$[0].amount").value(50.00))
+                .andExpect(jsonPath("$[0].currency").value("EUR"))
+                .andExpect(jsonPath("$[0].categoryId").value(categoryId1.toString()))
+                .andExpect(jsonPath("$[0].description").value("Extras"))
+                .andExpect(jsonPath("$[0].occurredAt").value("2025-02-08T10:30:00"))
+
+                .andExpect(jsonPath("$[1].id").value(transaction2.id().toString()))
+                .andExpect(jsonPath("$[1].accountId").value(accountId.toString()))
+                .andExpect(jsonPath("$[1].type").value("EXPENSE"))
+                .andExpect(jsonPath("$[1].amount").value(25.00))
+                .andExpect(jsonPath("$[1].currency").value("EUR"))
+                .andExpect(jsonPath("$[1].categoryId").value(categoryId2.toString()))
+                .andExpect(jsonPath("$[1].description").value("Dinner"))
+                .andExpect(jsonPath("$[1].occurredAt").value("2025-02-08T11:30:00"));
+    }
+
+    @Test
+    void shouldReturn200WithEmptyArrayWhenAccountHasNoTransactions() throws Exception {
+        // Arrange
+        UUID accountId = UUID.randomUUID();
+
+        when(getAccountTransactionsUseCase.getByAccountId(accountId))
+                .thenReturn(List.of());
+
+        // Act + Assert
+        mockMvc.perform(get("/api/accounts/{accountId}/transactions", accountId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(0));
     }
 }
