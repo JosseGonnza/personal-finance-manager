@@ -14,6 +14,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SearchAccountTransactionsServiceTest {
+
     @Test
     void shouldFilterTransactionByType() {
         //Arrange
@@ -72,5 +73,68 @@ public class SearchAccountTransactionsServiceTest {
         assertTrue(result.contains(t1));
         assertFalse(result.contains(t2));
         assertTrue(result.contains(t3));
+    }
+
+    @Test
+    void shouldFilterTransactionByCategory() {
+        //Arrange
+        InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
+        InMemoryTransactionRepository transactionRepository = new InMemoryTransactionRepository();
+        SearchAccountTransactionsUseCase service = new SearchAccountTransactionsService(
+                accountRepository,
+                transactionRepository);
+
+        UUID userId = UUID.randomUUID();
+        Account account = new Account(userId, "Personal", CurrencyType.EUR);
+        accountRepository.save(account);
+
+        UUID categoryId1 = UUID.randomUUID();
+        UUID categoryId2 = UUID.randomUUID();
+
+        Transaction t1 = new Transaction(
+                account.id(),
+                TransactionType.INCOME,
+                new Money(new BigDecimal("100.00"), CurrencyType.EUR),
+                categoryId1,
+                "Salary",
+                LocalDateTime.now()
+        );
+
+        Transaction t2 = new Transaction(
+                account.id(),
+                TransactionType.EXPENSE,
+                new Money(new BigDecimal("20.00"), CurrencyType.EUR),
+                categoryId1,
+                "Coffee",
+                LocalDateTime.now()
+        );
+
+        Transaction t3 = new Transaction(
+                account.id(),
+                TransactionType.INCOME,
+                new Money(new BigDecimal("30.00"), CurrencyType.EUR),
+                categoryId2,
+                "Gift",
+                LocalDateTime.now()
+        );
+        transactionRepository.save(t1);
+        transactionRepository.save(t2);
+        transactionRepository.save(t3);
+
+        AccountTransactionsFilter filter = new AccountTransactionsFilter(
+                null,
+                categoryId1,
+                null,
+                null
+        );
+
+        //Act
+        List<Transaction> result = service.search(account.id(), filter);
+
+        //Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(t1));
+        assertTrue(result.contains(t2));
+        assertFalse(result.contains(t3));
     }
 }

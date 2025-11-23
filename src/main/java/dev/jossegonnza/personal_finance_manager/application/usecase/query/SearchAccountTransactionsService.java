@@ -29,6 +29,7 @@ public class SearchAccountTransactionsService implements SearchAccountTransactio
         return transactionRepository.findAllByAccountId(accountId)
                 .stream()
                 .filter(t -> filter.type() == null || t.type() == filter.type())
+                .filter(t -> filter.categoryId() == null || t.categoryId() == filter.categoryId())
                 .toList();
     }
 }
