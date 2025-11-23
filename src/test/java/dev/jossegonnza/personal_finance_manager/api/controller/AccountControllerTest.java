@@ -7,6 +7,8 @@ import dev.jossegonnza.personal_finance_manager.application.port.in.command.Crea
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateAccountUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetAccountTransactionsUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetAccountUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.query.SearchAccountTransactionsUseCase;
+import dev.jossegonnza.personal_finance_manager.application.usecase.query.AccountTransactionsFilter;
 import dev.jossegonnza.personal_finance_manager.domain.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,6 +46,9 @@ public class AccountControllerTest {
 
     @MockitoBean
     private GetAccountTransactionsUseCase getAccountTransactionsUseCase;
+
+    @MockitoBean
+    private SearchAccountTransactionsUseCase searchAccountTransactionsUseCase;
 
     @Test
     void shouldReturn201WhenCreateAccount() throws Exception {
@@ -181,5 +187,38 @@ public class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void shouldReturnFilteredTransactions() throws Exception {
+        // Arrange
+        UUID accountId = UUID.randomUUID();
+        UUID shopping = UUID.randomUUID();
+
+        Transaction t = new Transaction(
+                accountId,
+                TransactionType.EXPENSE,
+                new Money(new BigDecimal("20.00"), CurrencyType.EUR),
+                shopping,
+                "Amazon",
+                LocalDateTime.of(2025, 3, 1, 0, 0)
+        );
+
+        when(searchAccountTransactionsUseCase.search(
+                eq(accountId),
+                any(AccountTransactionsFilter.class)
+        )).thenReturn(List.of(t));
+
+        // Act + Assert
+        mockMvc.perform(get("/api/accounts/{id}/transactions/search", accountId)
+                        .param("type", "EXPENSE")
+                        .param("categoryId", shopping.toString())
+                        .param("from", "2025-02-01T00:00:00")
+                        .param("to", "2025-04-01T00:00:00"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(t.id().toString()))
+                .andExpect(jsonPath("$[0].type").value("EXPENSE"))
+                .andExpect(jsonPath("$[0].categoryId").value(shopping.toString()));
     }
 }
