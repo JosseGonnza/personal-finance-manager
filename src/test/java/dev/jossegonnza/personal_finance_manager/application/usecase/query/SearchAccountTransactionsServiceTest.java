@@ -137,4 +137,124 @@ public class SearchAccountTransactionsServiceTest {
         assertTrue(result.contains(t2));
         assertFalse(result.contains(t3));
     }
+
+    @Test
+    void shouldFilterTransactionDateFrom() {
+        //Arrange
+        InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
+        InMemoryTransactionRepository transactionRepository = new InMemoryTransactionRepository();
+        SearchAccountTransactionsUseCase service = new SearchAccountTransactionsService(
+                accountRepository,
+                transactionRepository);
+
+        UUID userId = UUID.randomUUID();
+        Account account = new Account(userId, "Personal", CurrencyType.EUR);
+        accountRepository.save(account);
+
+        Transaction t1 = new Transaction(
+                account.id(),
+                TransactionType.INCOME,
+                new Money(new BigDecimal("100.00"), CurrencyType.EUR),
+                UUID.randomUUID(),
+                "Salary",
+                LocalDateTime.of(2025,4,1,0,0)
+                );
+
+        Transaction t2 = new Transaction(
+                account.id(),
+                TransactionType.EXPENSE,
+                new Money(new BigDecimal("20.00"), CurrencyType.EUR),
+                UUID.randomUUID(),
+                "Coffee",
+                LocalDateTime.of(2025,3,1,0,0)
+                );
+
+        Transaction t3 = new Transaction(
+                account.id(),
+                TransactionType.INCOME,
+                new Money(new BigDecimal("30.00"), CurrencyType.EUR),
+                UUID.randomUUID(),
+                "Gift",
+                LocalDateTime.of(2025,1,2,0,0)
+        );
+        transactionRepository.save(t1);
+        transactionRepository.save(t2);
+        transactionRepository.save(t3);
+
+        AccountTransactionsFilter filter = new AccountTransactionsFilter(
+                null,
+                null,
+                LocalDateTime.of(2025,2,1,0,0),
+                null
+        );
+
+        //Act
+        List<Transaction> result = service.search(account.id(), filter);
+
+        //Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(t1));
+        assertTrue(result.contains(t2));
+        assertFalse(result.contains(t3));
+    }
+
+    @Test
+    void shouldFilterTransactionDateTo() {
+        //Arrange
+        InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
+        InMemoryTransactionRepository transactionRepository = new InMemoryTransactionRepository();
+        SearchAccountTransactionsUseCase service = new SearchAccountTransactionsService(
+                accountRepository,
+                transactionRepository);
+
+        UUID userId = UUID.randomUUID();
+        Account account = new Account(userId, "Personal", CurrencyType.EUR);
+        accountRepository.save(account);
+
+        Transaction t1 = new Transaction(
+                account.id(),
+                TransactionType.INCOME,
+                new Money(new BigDecimal("100.00"), CurrencyType.EUR),
+                UUID.randomUUID(),
+                "Salary",
+                LocalDateTime.of(2025,4,1,0,0)
+        );
+
+        Transaction t2 = new Transaction(
+                account.id(),
+                TransactionType.EXPENSE,
+                new Money(new BigDecimal("20.00"), CurrencyType.EUR),
+                UUID.randomUUID(),
+                "Coffee",
+                LocalDateTime.of(2025,3,1,0,0)
+        );
+
+        Transaction t3 = new Transaction(
+                account.id(),
+                TransactionType.INCOME,
+                new Money(new BigDecimal("30.00"), CurrencyType.EUR),
+                UUID.randomUUID(),
+                "Gift",
+                LocalDateTime.of(2025,1,2,0,0)
+        );
+        transactionRepository.save(t1);
+        transactionRepository.save(t2);
+        transactionRepository.save(t3);
+
+        AccountTransactionsFilter filter = new AccountTransactionsFilter(
+                null,
+                null,
+                null,
+                LocalDateTime.of(2025,2,1,0,0)
+                );
+
+        //Act
+        List<Transaction> result = service.search(account.id(), filter);
+
+        //Assert
+        assertEquals(1, result.size());
+        assertFalse(result.contains(t1));
+        assertFalse(result.contains(t2));
+        assertTrue(result.contains(t3));
+    }
 }

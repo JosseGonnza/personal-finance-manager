@@ -30,6 +30,9 @@ public class SearchAccountTransactionsService implements SearchAccountTransactio
                 .stream()
                 .filter(t -> filter.type() == null || t.type() == filter.type())
                 .filter(t -> filter.categoryId() == null || t.categoryId() == filter.categoryId())
+                // Combinar negación con el tiempo contrario para añadir fechas inclusivas!!
+                .filter(t -> filter.from() == null || !t.occurredAt().isBefore(filter.from()))
+                .filter(t -> filter.to() == null || !t.occurredAt().isAfter(filter.to()))
                 .toList();
     }
 }
