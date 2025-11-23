@@ -4,10 +4,7 @@ import dev.jossegonnza.personal_finance_manager.application.port.out.CategoryRep
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public class InMemoryCategoryRepository implements CategoryRepository {
@@ -21,5 +18,18 @@ public class InMemoryCategoryRepository implements CategoryRepository {
     @Override
     public void save(Category category) {
         storage.put(category.id(), category);
+    }
+
+    @Override
+    public List<Category> findAll() {
+        return List.copyOf(storage.values());
+    }
+
+    @Override
+    public List<Category> findByUserId(UUID userId) {
+        return storage.values()
+                .stream()
+                .filter(category -> category.userId().equals(userId))
+                .toList();
     }
 }
