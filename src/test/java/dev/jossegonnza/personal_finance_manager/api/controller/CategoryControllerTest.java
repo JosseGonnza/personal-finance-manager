@@ -2,16 +2,14 @@ package dev.jossegonnza.personal_finance_manager.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jossegonnza.personal_finance_manager.api.dto.CreateCategoryRequest;
-import dev.jossegonnza.personal_finance_manager.application.exception.AccountNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.exception.CategoryNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.exception.UserNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetCategoryUseCase;
-import dev.jossegonnza.personal_finance_manager.domain.model.Account;
+import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetUserCategoriesUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryKind;
-import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +40,9 @@ public class CategoryControllerTest {
 
     @MockitoBean
     private GetCategoryUseCase getCategoryUseCase;
+
+    @MockitoBean
+    private GetUserCategoriesUseCase getUserCategoriesUseCase;
 
     @Test
     void shouldReturn201WhenCreateCategory() throws Exception {
@@ -141,4 +143,57 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.error").value("CATEGORY_NOT_FOUND"))
                 .andExpect(jsonPath("$.message").exists());
     }
+
+    @Test
+    void shouldReturnCategoriesWhenUserHasCategories() throws Exception {
+        //Arrange
+        UUID userId = UUID.randomUUID();
+        Category category1 = new Category(
+                userId,
+                "Shopping",
+                CategoryKind.EXPENSE,
+                "Red"
+        );
+        Category category2 = new Category(
+                userId,
+                "Pets",
+                CategoryKind.EXPENSE,
+                "Green"
+        );
+
+        when(getUserCategoriesUseCase.getByUserId(userId))
+                .thenReturn(List.of(category1, category2));
+
+        //Act + Assert
+        mockMvc.perform(get("/api/categories/users/{userId}", userId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(2))
+
+                .andExpect(jsonPath("$[0].id").value(category1.id().toString()))
+                .andExpect(jsonPath("$[0].userId").value(category1.userId().toString()))
+                .andExpect(jsonPath("$[0].name").value("Shopping"))
+                .andExpect(jsonPath("$[0].kind").value("EXPENSE"))
+                .andExpect(jsonPath("$[0].colorHex").value("Red"))
+
+                .andExpect(jsonPath("$[1].id").value(category2.id().toString()))
+                .andExpect(jsonPath("$[1].userId").value(category2.userId().toString()))
+                .andExpect(jsonPath("$[1].name").value("Pets"))
+                .andExpect(jsonPath("$[1].kind").value("EXPENSE"))
+                .andExpect(jsonPath("$[1].colorHex").value("Green"));
+    }
+
+    @Test
+    void shouldReturnEmptyArrayWhenUserHasNoCategories() throws Exception {
+        UUID userId = UUID.randomUUID();
+
+        when(getUserCategoriesUseCase.getByUserId(userId))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/api/categories/users/{userId}", userId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
 }

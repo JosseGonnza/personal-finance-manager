@@ -5,10 +5,12 @@ import dev.jossegonnza.personal_finance_manager.api.dto.CreateCategoryRequest;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetCategoryUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetUserCategoriesUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -16,10 +18,14 @@ import java.util.UUID;
 public class CategoryController {
     private final CreateCategoryUseCase createCategoryUseCase;
     private final GetCategoryUseCase getCategoryUseCase;
+    private final GetUserCategoriesUseCase getUserCategoriesUseCase;
 
-    public CategoryController(CreateCategoryUseCase createCategoryUseCase, GetCategoryUseCase getCategoryUseCase) {
+    public CategoryController(CreateCategoryUseCase createCategoryUseCase,
+                              GetCategoryUseCase getCategoryUseCase,
+                              GetUserCategoriesUseCase getUserCategoriesUseCase) {
         this.createCategoryUseCase = createCategoryUseCase;
         this.getCategoryUseCase = getCategoryUseCase;
+        this.getUserCategoriesUseCase = getUserCategoriesUseCase;
     }
 
     @PostMapping
@@ -43,5 +49,14 @@ public class CategoryController {
         Category category = getCategoryUseCase.getById(categoryId);
         return ResponseEntity
                 .ok(CategoryResponse.fromDomain(category));
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<CategoryResponse>> getByUserId(@PathVariable UUID userId) {
+        List<Category> categories = getUserCategoriesUseCase.getByUserId(userId);
+        List<CategoryResponse> response = categories.stream()
+                .map(CategoryResponse :: fromDomain)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 }
