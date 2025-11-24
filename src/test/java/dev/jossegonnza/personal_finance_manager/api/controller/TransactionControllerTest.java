@@ -9,6 +9,7 @@ import dev.jossegonnza.personal_finance_manager.application.port.in.command.Regi
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.RegisterTransactionUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.UpdateTransactionCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.UpdateTransactionUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.DeleteTransactionUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetTransactionUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
 import dev.jossegonnza.personal_finance_manager.domain.model.Money;
@@ -27,7 +28,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -48,6 +49,9 @@ public class TransactionControllerTest {
 
     @MockitoBean
     private UpdateTransactionUseCase updateTransactionUseCase;
+
+    @MockitoBean
+    private DeleteTransactionUseCase deleteTransactionUseCase;
 
     @Test
     void shouldReturn201WhenCreateTransaction() throws AccountNotFoundException, Exception {
@@ -238,6 +242,32 @@ public class TransactionControllerTest {
         mockMvc.perform(put("/api/transactions/{id}", unknownId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("TRANSACTION_NOT_FOUND"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void shouldReturn204WhenTransactionIsDeleted() throws Exception {
+        //Arrange
+        UUID transactionId = UUID.randomUUID();
+
+        mockMvc.perform(delete("/api/transactions/{id}", transactionId))
+                .andExpect(status().isNoContent());
+
+        verify(deleteTransactionUseCase).deleteById(transactionId);
+    }
+
+    @Test
+    void shouldReturn404WhenDeletingUnknownTransaction() throws Exception {
+        UUID unknownId = UUID.randomUUID();
+
+        doThrow(new TransactionNotFoundException(unknownId))
+                .when(deleteTransactionUseCase)
+                .deleteById(unknownId);
+
+        mockMvc.perform(delete("/api/transactions/{id}", unknownId))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.error").value("TRANSACTION_NOT_FOUND"))

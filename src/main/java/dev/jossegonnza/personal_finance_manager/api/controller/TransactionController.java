@@ -8,6 +8,7 @@ import dev.jossegonnza.personal_finance_manager.application.port.in.command.Regi
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.RegisterTransactionUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.UpdateTransactionCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.UpdateTransactionUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.DeleteTransactionUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetTransactionUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Transaction;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +23,17 @@ public class TransactionController {
     private final RegisterTransactionUseCase registerTransactionUseCase;
     private final GetTransactionUseCase getTransactionUseCase;
     private final UpdateTransactionUseCase updateTransactionUseCase;
+    private final DeleteTransactionUseCase deleteTransactionUseCase;
 
     public TransactionController(
             RegisterTransactionUseCase registerTransactionUseCase,
             GetTransactionUseCase getTransactionUseCase,
-            UpdateTransactionUseCase updateTransactionUseCase) {
+            UpdateTransactionUseCase updateTransactionUseCase,
+            DeleteTransactionUseCase deleteTransactionUseCase) {
         this.registerTransactionUseCase = registerTransactionUseCase;
         this.getTransactionUseCase = getTransactionUseCase;
         this.updateTransactionUseCase = updateTransactionUseCase;
+        this.deleteTransactionUseCase = deleteTransactionUseCase;
     }
 
     @PostMapping
@@ -76,5 +80,11 @@ public class TransactionController {
 
         return ResponseEntity
                 .ok(TransactionResponse.fromDomain(updated));
+    }
+
+    @DeleteMapping("/{transactionId}")
+    public ResponseEntity<Void> delete(@PathVariable UUID transactionId) {
+        deleteTransactionUseCase.deleteById(transactionId);
+        return ResponseEntity.noContent().build();
     }
 }

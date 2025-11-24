@@ -2,7 +2,7 @@ package dev.jossegonnza.personal_finance_manager.application.usecase.command;
 
 import dev.jossegonnza.personal_finance_manager.application.exception.TransactionNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.RegisterTransactionCommand;
-import dev.jossegonnza.personal_finance_manager.application.port.in.query.DeleteTransactionUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.DeleteTransactionUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
 import dev.jossegonnza.personal_finance_manager.domain.model.TransactionType;
