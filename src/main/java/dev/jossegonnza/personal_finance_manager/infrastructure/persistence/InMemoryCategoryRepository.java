@@ -32,4 +32,9 @@ public class InMemoryCategoryRepository implements CategoryRepository {
                 .filter(category -> category.userId().equals(userId))
                 .toList();
     }
+
+    @Override
+    public void deleteById(UUID categoryId) {
+        storage.remove(categoryId);
+    }
 }

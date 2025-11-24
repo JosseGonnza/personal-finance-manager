@@ -11,4 +11,5 @@ public interface TransactionRepository {
     void save(Transaction transaction);
     List<Transaction> findAll();
     List<Transaction> findAllByAccountId(UUID accountId);
+    boolean existsByCategoryId(UUID categoryId);
 }

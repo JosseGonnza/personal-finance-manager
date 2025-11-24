@@ -1,10 +1,7 @@
 package dev.jossegonnza.personal_finance_manager.api.controller;
 
 import dev.jossegonnza.personal_finance_manager.api.dto.ApiErrorResponse;
-import dev.jossegonnza.personal_finance_manager.application.exception.AccountNotFoundException;
-import dev.jossegonnza.personal_finance_manager.application.exception.CategoryNotFoundException;
-import dev.jossegonnza.personal_finance_manager.application.exception.TransactionNotFoundException;
-import dev.jossegonnza.personal_finance_manager.application.exception.UserNotFoundException;
+import dev.jossegonnza.personal_finance_manager.application.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -54,6 +51,17 @@ public class ApiExceptionHandler {
         );
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(body);
+    }
+
+    @ExceptionHandler(CategoryInUseException.class)
+    public ResponseEntity<ApiErrorResponse> handleCategoryInUse(CategoryInUseException exception) {
+        ApiErrorResponse body = new ApiErrorResponse(
+                "CATEGORY_IN_USE",
+                exception.getMessage()
+        );
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
                 .body(body);
     }
 }

@@ -34,4 +34,11 @@ public class InMemoryTransactionRepository implements TransactionRepository {
                 .filter(transaction -> transaction.accountId().equals(accountId))
                 .toList();
     }
+
+    @Override
+    public boolean existsByCategoryId(UUID categoryId) {
+        return storage.values()
+                .stream()
+                .anyMatch(transaction -> transaction.categoryId().equals(categoryId));
+    }
 }
