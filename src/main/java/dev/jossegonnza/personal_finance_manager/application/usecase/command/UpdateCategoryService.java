@@ -27,7 +27,7 @@ public class UpdateCategoryService implements UpdateCategoryUseCase {
                 existing.userId(),
                 command.name(),
                 command.kind(),
-                command.colorHex()
+                command.color()
         );
 
         categoryRepository.save(updated);

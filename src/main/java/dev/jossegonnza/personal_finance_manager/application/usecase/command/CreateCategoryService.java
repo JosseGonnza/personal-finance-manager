@@ -19,7 +19,7 @@ public class CreateCategoryService implements CreateCategoryUseCase {
                 command.userId(),
                 command.name(),
                 command.kind(),
-                command.colorHex()
+                command.color()
         );
 
         categoryRepository.save(category);

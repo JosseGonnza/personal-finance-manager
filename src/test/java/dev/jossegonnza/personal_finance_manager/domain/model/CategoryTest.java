@@ -13,14 +13,14 @@ public class CategoryTest {
         UUID userId = UUID.randomUUID();
         String name = "Restaurantes";
         CategoryKind kind = CategoryKind.EXPENSE;
-        String colorHex = "Purple";
+        CategoryColor orange = CategoryColor.ORANGE;
 
         //Act
         Category category = new Category(
                 userId,
                 name,
                 kind,
-                colorHex
+                orange
         );
 
         //Assert
@@ -28,7 +28,7 @@ public class CategoryTest {
         assertEquals(userId, category.userId());
         assertEquals(name, category.name());
         assertEquals(CategoryKind.EXPENSE, category.kind());
-        assertEquals(colorHex, category.colorHex());
+        assertEquals(orange, category.color());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class CategoryTest {
         //Arrange
         UUID userId = UUID.randomUUID();
         CategoryKind kind = CategoryKind.EXPENSE;
-        String colorHex = "Purple";
+        CategoryColor orange = CategoryColor.ORANGE;
 
         //Act
         IllegalArgumentException exception = assertThrows(
@@ -45,7 +45,7 @@ public class CategoryTest {
                         userId,
                         "",
                         kind,
-                        colorHex
+                        orange
                 )
         );
 
@@ -58,7 +58,7 @@ public class CategoryTest {
         //Arrange
         UUID userId = UUID.randomUUID();
         CategoryKind kind = CategoryKind.EXPENSE;
-        String colorHex = "Purple";
+        CategoryColor orange = CategoryColor.ORANGE;
 
         //Act
         IllegalArgumentException exception = assertThrows(
@@ -67,7 +67,7 @@ public class CategoryTest {
                         userId,
                         null,
                         kind,
-                        colorHex
+                        orange
                 )
         );
 
@@ -80,8 +80,7 @@ public class CategoryTest {
         //Arrange
         String name = "Restaurantes";
         CategoryKind kind = CategoryKind.EXPENSE;
-        String colorHex = "Purple";
-
+        CategoryColor orange = CategoryColor.ORANGE;
         //Act
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
@@ -89,7 +88,7 @@ public class CategoryTest {
                         null,
                         name,
                         kind,
-                        colorHex
+                        orange
                 )
         );
 
@@ -102,7 +101,7 @@ public class CategoryTest {
         //Arrange
         UUID userId = UUID.randomUUID();
         String name = "Restaurantes";
-        String colorHex = "Purple";
+        CategoryColor orange = CategoryColor.ORANGE;
 
         //Act
         NullPointerException exception = assertThrows(
@@ -111,7 +110,7 @@ public class CategoryTest {
                         userId,
                         name,
                         null,
-                        colorHex
+                        orange
                 )
         );
 

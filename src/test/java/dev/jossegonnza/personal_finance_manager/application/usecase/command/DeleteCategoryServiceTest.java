@@ -27,7 +27,7 @@ public class DeleteCategoryServiceTest {
                 userId,
                 "Shopping",
                 CategoryKind.EXPENSE,
-                "Red"
+                CategoryColor.ORANGE
         );
         categoryRepository.save(category);
 
@@ -50,7 +50,7 @@ public class DeleteCategoryServiceTest {
                 userId,
                 "Shopping",
                 CategoryKind.EXPENSE,
-                "Red"
+                CategoryColor.ORANGE
         );
         categoryRepository.save(category);
 

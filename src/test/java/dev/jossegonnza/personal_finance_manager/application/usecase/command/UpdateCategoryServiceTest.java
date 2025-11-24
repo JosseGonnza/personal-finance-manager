@@ -4,6 +4,7 @@ import dev.jossegonnza.personal_finance_manager.application.exception.CategoryNo
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.UpdateCategoryCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.UpdateCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
+import dev.jossegonnza.personal_finance_manager.domain.model.CategoryColor;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryKind;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryCategoryRepository;
 import org.junit.jupiter.api.Test;
@@ -26,14 +27,14 @@ public class UpdateCategoryServiceTest {
                 userId,
                 "Shopping",
                 CategoryKind.EXPENSE,
-                "Red"
+                CategoryColor.ORANGE
         );
         categoryRepository.save(original);
 
         UpdateCategoryCommand command = new UpdateCategoryCommand(
                 "Groceries",
                 CategoryKind.EXPENSE,
-                "Green"
+                CategoryColor.GREEN
         );
 
         // Act
@@ -44,12 +45,12 @@ public class UpdateCategoryServiceTest {
         assertEquals(original.userId(), updated.userId());
         assertEquals("Groceries", updated.name());
         assertEquals(CategoryKind.EXPENSE, updated.kind());
-        assertEquals("Green", updated.colorHex());
+        assertEquals(CategoryColor.GREEN, updated.color());
 
         Category fromRepo = categoryRepository.findById(original.id()).orElseThrow();
         assertEquals(updated.name(), fromRepo.name());
         assertEquals(updated.kind(), fromRepo.kind());
-        assertEquals(updated.colorHex(), fromRepo.colorHex());
+        assertEquals(updated.color(), fromRepo.color());
     }
 
     @Test
@@ -62,7 +63,7 @@ public class UpdateCategoryServiceTest {
         UpdateCategoryCommand command = new UpdateCategoryCommand(
                 "Whatever",
                 CategoryKind.EXPENSE,
-                "Blue"
+                CategoryColor.ORANGE
         );
 
         // Act + Assert

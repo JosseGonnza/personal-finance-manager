@@ -2,6 +2,7 @@ package dev.jossegonnza.personal_finance_manager.application.usecase.command;
 
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryCommand;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
+import dev.jossegonnza.personal_finance_manager.domain.model.CategoryColor;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryKind;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryCategoryRepository;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ public class CreateCategoryServiceTest {
                 userId,
                 "Restaurantes",
                 CategoryKind.EXPENSE,
-                "Purple"
+                CategoryColor.ORANGE
         );
 
         //Act
@@ -33,7 +34,7 @@ public class CreateCategoryServiceTest {
         assertEquals(userId, category.userId());
         assertEquals("Restaurantes", category.name());
         assertEquals(CategoryKind.EXPENSE, category.kind());
-        assertEquals("Purple", category.colorHex());
+        assertEquals(CategoryColor.ORANGE, category.color());
         assertTrue(categoryRepository.findById(category.id()).isPresent());
     }
 }

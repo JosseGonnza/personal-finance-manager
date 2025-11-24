@@ -2,6 +2,7 @@ package dev.jossegonnza.personal_finance_manager.application.usecase.query;
 
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetUserCategoriesUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
+import dev.jossegonnza.personal_finance_manager.domain.model.CategoryColor;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryKind;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryCategoryRepository;
 import org.junit.jupiter.api.Test;
@@ -25,19 +26,19 @@ public class GetUserCategoriesServiceTest {
                 userId,
                 "Shopping",
                 CategoryKind.EXPENSE,
-                "Red"
+                CategoryColor.ORANGE
         );
         Category category2 = new Category(
                 userId,
                 "Salary",
                 CategoryKind.INCOME,
-                "Orange"
+                CategoryColor.RED
         );
         Category category3 = new Category(
                 otherUserId,
                 "Pets",
                 CategoryKind.EXPENSE,
-                "Green"
+                CategoryColor.BLUE
         );
         categoryRepository.save(category1);
         categoryRepository.save(category2);

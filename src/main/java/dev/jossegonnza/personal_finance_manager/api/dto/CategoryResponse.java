@@ -10,7 +10,7 @@ public record CategoryResponse(
         UUID userId,
         String name,
         CategoryKind kind,
-        String colorHex
+        CategoryColorResponse color
 ) {
     public static CategoryResponse fromDomain(Category category) {
         return new CategoryResponse(
@@ -18,7 +18,7 @@ public record CategoryResponse(
                 category.userId(),
                 category.name(),
                 category.kind(),
-                category.colorHex()
+                CategoryColorResponse.fromDomain(category.color())
         );
     }
 }

@@ -3,6 +3,7 @@ package dev.jossegonnza.personal_finance_manager.application.usecase.query;
 import dev.jossegonnza.personal_finance_manager.application.exception.CategoryNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
+import dev.jossegonnza.personal_finance_manager.domain.model.CategoryColor;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryKind;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryCategoryRepository;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ public class GetCategoryServiceTest {
                 UUID.randomUUID(),
                 "Restaurantes",
                 CategoryKind.EXPENSE,
-                "Verde"
+                CategoryColor.ORANGE
         );
         categoryRepository.save(existing);
 
@@ -35,7 +36,7 @@ public class GetCategoryServiceTest {
         assertEquals(existing.userId(), category.userId());
         assertEquals(existing.name(), category.name());
         assertEquals(existing.kind(), category.kind());
-        assertEquals(existing.colorHex(), category.colorHex());
+        assertEquals(existing.color(), category.color());
     }
 
     @Test

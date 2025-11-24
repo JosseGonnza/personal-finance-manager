@@ -40,7 +40,7 @@ public class CategoryController {
                 request.userId(),
                 request.name(),
                 request.kind(),
-                request.colorHex()
+                request.color()
         );
 
         Category category = createCategoryUseCase.create(command);
@@ -80,7 +80,7 @@ public class CategoryController {
         UpdateCategoryCommand command = new UpdateCategoryCommand(
                 request.name(),
                 request.kind(),
-                request.colorHex()
+                request.color()
         );
 
         Category updated = updateCategoryUseCase.update(categoryId, command);

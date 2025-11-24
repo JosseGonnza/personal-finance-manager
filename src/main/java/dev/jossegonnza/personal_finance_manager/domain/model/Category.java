@@ -9,21 +9,30 @@ public class Category {
     private final UUID userId;
     private final String name;
     private final CategoryKind kind;
-    private final String colorHex;
+    private final CategoryColor color;
 
-    public Category(UUID userId, String name, CategoryKind kind, String colorHex) {
+    public Category(UUID userId,
+                    String name,
+                    CategoryKind kind,
+                    CategoryColor color) {
+
         String normalizedName = name == null ? null : name.trim();
         if (normalizedName == null || normalizedName.isEmpty()) {
             throw new IllegalArgumentException("name cannot be null or empty");
         }
+
         this.id = UUID.randomUUID();
         this.userId = Objects.requireNonNull(userId, "userId cannot be null");
         this.name = normalizedName;
-        this.kind = Objects.requireNonNull(kind, "categoryKind cannot be null");
-        this.colorHex = Objects.requireNonNull(colorHex, "colorHex cannot be null");
+        this.kind = Objects.requireNonNull(kind, "kind cannot be null");
+        this.color = Objects.requireNonNull(color, "color cannot be null");
     }
 
-    public Category(UUID id, UUID userId, String name, CategoryKind kind, String colorHex) {
+    public Category(UUID id,
+                    UUID userId,
+                    String name,
+                    CategoryKind kind,
+                    CategoryColor color) {
         String normalizedName = name == null ? null : name.trim();
         if (normalizedName == null || normalizedName.isEmpty()) {
             throw new IllegalArgumentException("name cannot be null or empty");
@@ -31,9 +40,27 @@ public class Category {
 
         this.id = Objects.requireNonNull(id, "id cannot be null");
         this.userId = Objects.requireNonNull(userId, "userId cannot be null");
-        this.kind = Objects.requireNonNull(kind, "kind cannot be null");
-        this.colorHex = Objects.requireNonNull(colorHex, "colorHex cannot be null");
         this.name = normalizedName;
+        this.kind = Objects.requireNonNull(kind, "kind cannot be null");
+        this.color = Objects.requireNonNull(color, "color cannot be null");
+    }
+
+    public Category update(String name,
+                           CategoryKind kind,
+                           CategoryColor color) {
+
+        String normalizedName = name == null ? null : name.trim();
+        if (normalizedName == null || normalizedName.isEmpty()) {
+            throw new IllegalArgumentException("name cannot be null or empty");
+        }
+
+        return new Category(
+                this.id,
+                this.userId,
+                normalizedName,
+                Objects.requireNonNull(kind, "kind cannot be null"),
+                Objects.requireNonNull(color, "color cannot be null")
+        );
     }
 
     public UUID id() {
@@ -52,7 +79,7 @@ public class Category {
         return kind;
     }
 
-    public String colorHex() {
-        return colorHex;
+    public CategoryColor color() {
+        return color;
     }
 }

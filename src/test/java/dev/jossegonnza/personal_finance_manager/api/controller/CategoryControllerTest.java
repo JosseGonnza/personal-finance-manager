@@ -10,6 +10,7 @@ import dev.jossegonnza.personal_finance_manager.application.port.in.command.*;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetUserCategoriesUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
+import dev.jossegonnza.personal_finance_manager.domain.model.CategoryColor;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryKind;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,14 +59,14 @@ public class CategoryControllerTest {
                 userId,
                 "Restaurantes",
                 CategoryKind.EXPENSE,
-                "Purple"
+                CategoryColor.ORANGE
         );
 
         Category category = new Category(
                 userId,
                 "Restaurantes",
                 CategoryKind.EXPENSE,
-                "Purple"
+                CategoryColor.RED
         );
 
         when(createCategoryUseCase.create(any(CreateCategoryCommand.class)))
@@ -73,16 +74,16 @@ public class CategoryControllerTest {
 
         //Act + Assert
         mockMvc.perform(post("/api/categories")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(org.springframework.http.MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(category.id().toString()))
                 .andExpect(jsonPath("$.userId").value(userId.toString()))
                 .andExpect(jsonPath("$.name").value("Restaurantes"))
                 .andExpect(jsonPath("$.kind").value("EXPENSE"))
-                .andExpect(jsonPath("$.colorHex").value("Purple"));
-    }
+                .andExpect(jsonPath("$.color.name").value("RED"))
+                .andExpect(jsonPath("$.color.hex").value("#EF4444"));    }
 
     @Test
     void shouldReturn404WhenUserNotFound() throws UserNotFoundException, Exception {
@@ -93,7 +94,7 @@ public class CategoryControllerTest {
                 userId,
                 "Restaurantes",
                 CategoryKind.EXPENSE,
-                "Purple"
+                CategoryColor.ORANGE
         );
 
         when(createCategoryUseCase.create(any(CreateCategoryCommand.class)))
@@ -117,7 +118,7 @@ public class CategoryControllerTest {
                 userId,
                 "Restaurantes",
                 CategoryKind.EXPENSE,
-                "Verde"
+                CategoryColor.RED
         );
 
         when(getCategoryUseCase.getById(category.id()))
@@ -131,8 +132,8 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.userId").value(category.userId().toString()))
                 .andExpect(jsonPath("$.name").value("Restaurantes"))
                 .andExpect(jsonPath("$.kind").value("EXPENSE"))
-                .andExpect(jsonPath("$.colorHex").value("Verde"));
-    }
+                .andExpect(jsonPath("$.color.name").value("RED"))
+                .andExpect(jsonPath("$.color.hex").value("#EF4444"));    }
 
     @Test
     void shouldReturn404WhenCategoryNotFound() throws Exception {
@@ -158,13 +159,13 @@ public class CategoryControllerTest {
                 userId,
                 "Shopping",
                 CategoryKind.EXPENSE,
-                "Red"
+                CategoryColor.ORANGE
         );
         Category category2 = new Category(
                 userId,
                 "Pets",
                 CategoryKind.EXPENSE,
-                "Green"
+                CategoryColor.RED
         );
 
         when(getUserCategoriesUseCase.getByUserId(userId))
@@ -180,13 +181,15 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$[0].userId").value(category1.userId().toString()))
                 .andExpect(jsonPath("$[0].name").value("Shopping"))
                 .andExpect(jsonPath("$[0].kind").value("EXPENSE"))
-                .andExpect(jsonPath("$[0].colorHex").value("Red"))
+                .andExpect(jsonPath("$[0].color.name").value("ORANGE"))
+                .andExpect(jsonPath("$[0].color.hex").value("#F97316"))
 
                 .andExpect(jsonPath("$[1].id").value(category2.id().toString()))
                 .andExpect(jsonPath("$[1].userId").value(category2.userId().toString()))
                 .andExpect(jsonPath("$[1].name").value("Pets"))
                 .andExpect(jsonPath("$[1].kind").value("EXPENSE"))
-                .andExpect(jsonPath("$[1].colorHex").value("Green"));
+                .andExpect(jsonPath("$[1].color.name").value("RED"))
+                .andExpect(jsonPath("$[1].color.hex").value("#EF4444"));
     }
 
     @Test
@@ -254,7 +257,7 @@ public class CategoryControllerTest {
         UpdateCategoryRequest request = new UpdateCategoryRequest(
                 "Groceries",
                 CategoryKind.EXPENSE,
-                "Green"
+                CategoryColor.ORANGE
         );
 
         Category updated = new Category(
@@ -262,7 +265,7 @@ public class CategoryControllerTest {
                 userId,
                 "Groceries",
                 CategoryKind.EXPENSE,
-                "Green"
+                CategoryColor.ORANGE
         );
 
         when(updateCategoryUseCase.update(eq(categoryId), any(UpdateCategoryCommand.class)))
@@ -279,7 +282,8 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.userId").value(userId.toString()))
                 .andExpect(jsonPath("$.name").value("Groceries"))
                 .andExpect(jsonPath("$.kind").value("EXPENSE"))
-                .andExpect(jsonPath("$.colorHex").value("Green"));
+                .andExpect(jsonPath("$.color.name").value("ORANGE"))
+                .andExpect(jsonPath("$.color.hex").value("#F97316"));
     }
 
     @Test
@@ -290,7 +294,7 @@ public class CategoryControllerTest {
         UpdateCategoryRequest request = new UpdateCategoryRequest(
                 "Whatever",
                 CategoryKind.EXPENSE,
-                "Blue"
+                CategoryColor.ORANGE
         );
 
         when(updateCategoryUseCase.update(eq(unknownId), any(UpdateCategoryCommand.class)))
