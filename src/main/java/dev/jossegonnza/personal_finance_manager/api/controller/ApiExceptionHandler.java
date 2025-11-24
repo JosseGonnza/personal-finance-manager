@@ -61,7 +61,7 @@ public class ApiExceptionHandler {
                 exception.getMessage()
         );
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.IM_USED)
                 .body(body);
     }
 }

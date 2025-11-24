@@ -4,6 +4,7 @@ import dev.jossegonnza.personal_finance_manager.api.dto.CategoryResponse;
 import dev.jossegonnza.personal_finance_manager.api.dto.CreateCategoryRequest;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.DeleteCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetUserCategoriesUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
@@ -19,13 +20,16 @@ public class CategoryController {
     private final CreateCategoryUseCase createCategoryUseCase;
     private final GetCategoryUseCase getCategoryUseCase;
     private final GetUserCategoriesUseCase getUserCategoriesUseCase;
+    private final DeleteCategoryUseCase deleteCategoryUseCase;
 
     public CategoryController(CreateCategoryUseCase createCategoryUseCase,
                               GetCategoryUseCase getCategoryUseCase,
-                              GetUserCategoriesUseCase getUserCategoriesUseCase) {
+                              GetUserCategoriesUseCase getUserCategoriesUseCase,
+                              DeleteCategoryUseCase deleteCategoryUseCase) {
         this.createCategoryUseCase = createCategoryUseCase;
         this.getCategoryUseCase = getCategoryUseCase;
         this.getUserCategoriesUseCase = getUserCategoriesUseCase;
+        this.deleteCategoryUseCase = deleteCategoryUseCase;
     }
 
     @PostMapping
@@ -58,5 +62,11 @@ public class CategoryController {
                 .map(CategoryResponse :: fromDomain)
                 .toList();
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> delete(@PathVariable UUID categoryId) {
+        deleteCategoryUseCase.deleteById(categoryId);
+        return ResponseEntity.noContent().build();
     }
 }

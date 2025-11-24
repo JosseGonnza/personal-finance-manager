@@ -2,10 +2,12 @@ package dev.jossegonnza.personal_finance_manager.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jossegonnza.personal_finance_manager.api.dto.CreateCategoryRequest;
+import dev.jossegonnza.personal_finance_manager.application.exception.CategoryInUseException;
 import dev.jossegonnza.personal_finance_manager.application.exception.CategoryNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.exception.UserNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryCommand;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.DeleteCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetUserCategoriesUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
@@ -21,9 +23,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CategoryController.class)
@@ -43,6 +44,9 @@ public class CategoryControllerTest {
 
     @MockitoBean
     private GetUserCategoriesUseCase getUserCategoriesUseCase;
+
+    @MockitoBean
+    private DeleteCategoryUseCase deleteCategoryUseCase;
 
     @Test
     void shouldReturn201WhenCreateCategory() throws Exception {
@@ -185,15 +189,57 @@ public class CategoryControllerTest {
 
     @Test
     void shouldReturnEmptyArrayWhenUserHasNoCategories() throws Exception {
+        //Arrange
         UUID userId = UUID.randomUUID();
 
         when(getUserCategoriesUseCase.getByUserId(userId))
                 .thenReturn(List.of());
 
+        //Act + Assert
         mockMvc.perform(get("/api/categories/users/{userId}", userId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(0));
     }
 
+    @Test
+    void shouldReturn204WhenCategoryIsDelete() throws Exception {
+        //Arrange
+        UUID categoryId = UUID.randomUUID();
+
+        mockMvc.perform(delete("/api/categories/{id}", categoryId))
+                .andExpect(status().isNoContent());
+
+        verify(deleteCategoryUseCase).deleteById(categoryId);
+    }
+
+    @Test
+    void shouldReturn404WhenDeletingUnknownCategory() throws Exception {
+        UUID unknownId = UUID.randomUUID();
+
+        doThrow(new CategoryNotFoundException(unknownId))
+                .when(deleteCategoryUseCase)
+                .deleteById(unknownId);
+
+        mockMvc.perform(delete("/api/categories/{id}", unknownId))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("CATEGORY_NOT_FOUND"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void shouldReturn226WhenDeletingCategoryInUse() throws Exception {
+        UUID categoryId = UUID.randomUUID();
+
+        doThrow(new CategoryInUseException(categoryId))
+                .when(deleteCategoryUseCase)
+                .deleteById(categoryId);
+
+        mockMvc.perform(delete("/api/categories/{id}", categoryId))
+                .andExpect(status().isImUsed())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("CATEGORY_IN_USE"))
+                .andExpect(jsonPath("$.message").exists());
+    }
 }
