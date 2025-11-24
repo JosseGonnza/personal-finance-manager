@@ -1,12 +1,10 @@
 package dev.jossegonnza.personal_finance_manager.infrastructure.persistence;
 
 import dev.jossegonnza.personal_finance_manager.application.port.out.TransactionRepository;
-import dev.jossegonnza.personal_finance_manager.domain.model.Category;
 import dev.jossegonnza.personal_finance_manager.domain.model.Transaction;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryTransactionRepository implements TransactionRepository {
@@ -40,5 +38,10 @@ public class InMemoryTransactionRepository implements TransactionRepository {
         return storage.values()
                 .stream()
                 .anyMatch(transaction -> transaction.categoryId().equals(categoryId));
+    }
+
+    @Override
+    public void deleteById(UUID transactionId) {
+        storage.remove(transactionId);
     }
 }

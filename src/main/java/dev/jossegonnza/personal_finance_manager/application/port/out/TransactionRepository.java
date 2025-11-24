@@ -12,4 +12,5 @@ public interface TransactionRepository {
     List<Transaction> findAll();
     List<Transaction> findAllByAccountId(UUID accountId);
     boolean existsByCategoryId(UUID categoryId);
+    void deleteById(UUID transactionId);
 }
