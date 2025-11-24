@@ -20,7 +20,20 @@ public class Category {
         this.userId = Objects.requireNonNull(userId, "userId cannot be null");
         this.name = normalizedName;
         this.kind = Objects.requireNonNull(kind, "categoryKind cannot be null");
-        this.colorHex = colorHex;
+        this.colorHex = Objects.requireNonNull(colorHex, "colorHex cannot be null");
+    }
+
+    public Category(UUID id, UUID userId, String name, CategoryKind kind, String colorHex) {
+        String normalizedName = name == null ? null : name.trim();
+        if (normalizedName == null || normalizedName.isEmpty()) {
+            throw new IllegalArgumentException("name cannot be null or empty");
+        }
+
+        this.id = Objects.requireNonNull(id, "id cannot be null");
+        this.userId = Objects.requireNonNull(userId, "userId cannot be null");
+        this.kind = Objects.requireNonNull(kind, "kind cannot be null");
+        this.colorHex = Objects.requireNonNull(colorHex, "colorHex cannot be null");
+        this.name = normalizedName;
     }
 
     public UUID id() {

@@ -2,12 +2,11 @@ package dev.jossegonnza.personal_finance_manager.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jossegonnza.personal_finance_manager.api.dto.CreateCategoryRequest;
+import dev.jossegonnza.personal_finance_manager.api.dto.UpdateCategoryRequest;
 import dev.jossegonnza.personal_finance_manager.application.exception.CategoryInUseException;
 import dev.jossegonnza.personal_finance_manager.application.exception.CategoryNotFoundException;
 import dev.jossegonnza.personal_finance_manager.application.exception.UserNotFoundException;
-import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryCommand;
-import dev.jossegonnza.personal_finance_manager.application.port.in.command.CreateCategoryUseCase;
-import dev.jossegonnza.personal_finance_manager.application.port.in.command.DeleteCategoryUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.command.*;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetUserCategoriesUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
@@ -47,6 +46,9 @@ public class CategoryControllerTest {
 
     @MockitoBean
     private DeleteCategoryUseCase deleteCategoryUseCase;
+
+    @MockitoBean
+    private UpdateCategoryUseCase updateCategoryUseCase;
 
     @Test
     void shouldReturn201WhenCreateCategory() throws Exception {
@@ -240,6 +242,67 @@ public class CategoryControllerTest {
                 .andExpect(status().isImUsed())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.error").value("CATEGORY_IN_USE"))
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void shouldReturn200WhenCategoryIsUpdated() throws Exception {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        UUID categoryId = UUID.randomUUID();
+
+        UpdateCategoryRequest request = new UpdateCategoryRequest(
+                "Groceries",
+                CategoryKind.EXPENSE,
+                "Green"
+        );
+
+        Category updated = new Category(
+                categoryId,
+                userId,
+                "Groceries",
+                CategoryKind.EXPENSE,
+                "Green"
+        );
+
+        when(updateCategoryUseCase.update(eq(categoryId), any(UpdateCategoryCommand.class)))
+                .thenReturn(updated);
+
+        // Act + Assert
+        mockMvc.perform(put("/api/categories/{id}", categoryId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                .andExpect(jsonPath("$.id").value(categoryId.toString()))
+                .andExpect(jsonPath("$.userId").value(userId.toString()))
+                .andExpect(jsonPath("$.name").value("Groceries"))
+                .andExpect(jsonPath("$.kind").value("EXPENSE"))
+                .andExpect(jsonPath("$.colorHex").value("Green"));
+    }
+
+    @Test
+    void shouldReturn404WhenUpdatingNonExistingCategory() throws Exception {
+        // Arrange
+        UUID unknownId = UUID.randomUUID();
+
+        UpdateCategoryRequest request = new UpdateCategoryRequest(
+                "Whatever",
+                CategoryKind.EXPENSE,
+                "Blue"
+        );
+
+        when(updateCategoryUseCase.update(eq(unknownId), any(UpdateCategoryCommand.class)))
+                .thenThrow(new CategoryNotFoundException(unknownId));
+
+        // Act + Assert
+        mockMvc.perform(put("/api/categories/{id}", unknownId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("CATEGORY_NOT_FOUND"))
                 .andExpect(jsonPath("$.message").exists());
     }
 }
