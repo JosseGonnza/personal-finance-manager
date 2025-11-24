@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SearchAccountTransactionsServiceTest {
 
     @Test
-    void shouldFilterTransactionByType() {
+    void shouldFilterTransactionByCurrencyType() {
         //Arrange
         InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
         InMemoryTransactionRepository transactionRepository = new InMemoryTransactionRepository();

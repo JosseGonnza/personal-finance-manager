@@ -10,46 +10,61 @@ public class Account {
     private final UUID userId;
     private final String name;
     private final CurrencyType currencyType;
-    private Money balance;
+    private BigDecimal balance;
 
     public Account(UUID userId, String name, CurrencyType currencyType) {
         String normalizedName = name == null ? null : name.trim();
-        if (normalizedName == null || normalizedName.isEmpty()){
+        if (normalizedName == null || normalizedName.isEmpty()) {
             throw new IllegalArgumentException("name cannot be null or empty");
         }
         this.id = UUID.randomUUID();
         this.userId = Objects.requireNonNull(userId, "userId cannot be null");
         this.name = normalizedName;
         this.currencyType = Objects.requireNonNull(currencyType, "currencyType cannot be null");
-        this.balance = new Money(new BigDecimal("0.00"), currencyType);;
+        this.balance = BigDecimal.ZERO;
     }
 
-    public Transaction registerIncome(Money amount,UUID categoryId, String description, LocalDateTime occurredAt) {
-        if (amount.type() != this.currencyType){
-            throw new IllegalArgumentException("transaction currency must match account currency");
-        }
-        this.balance = this.balance.plus(amount);
+    public Transaction registerIncome(Money amount,
+                                      UUID categoryId,
+                                      String description,
+                                      LocalDateTime occurredAt) {
+        validateCurrency(amount);
+        this.balance = this.balance.add(amount.value());
         return new Transaction(
                 this.id,
                 TransactionType.INCOME,
                 amount,
                 categoryId,
                 description,
-                occurredAt);
+                occurredAt
+        );
     }
 
-    public Transaction registerExpense(Money amount,UUID categoryId, String description, LocalDateTime occurredAt) {
-        if (amount.type() != this.currencyType){
-            throw new IllegalArgumentException("transaction currency must match account currency");
-        }
-        this.balance = this.balance.minus(amount);
+    public Transaction registerExpense(Money amount,
+                                       UUID categoryId,
+                                       String description,
+                                       LocalDateTime occurredAt) {
+        validateCurrency(amount);
+        this.balance = this.balance.subtract(amount.value());
         return new Transaction(
                 this.id,
                 TransactionType.EXPENSE,
                 amount,
                 categoryId,
                 description,
-                occurredAt);
+                occurredAt
+        );
+    }
+
+    public Account updateBalance(BigDecimal newBalance) {
+        this.balance = Objects.requireNonNull(newBalance, "balance cannot be null");
+        return this;
+    }
+
+    private void validateCurrency(Money amount) {
+        if (amount.type() != this.currencyType) {
+            throw new IllegalArgumentException("transaction currency must match account currency");
+        }
     }
 
     public UUID id() {
@@ -64,11 +79,11 @@ public class Account {
         return name;
     }
 
-    public CurrencyType type() {
+    public CurrencyType currencyType() {
         return currencyType;
     }
 
-    public Money balance() {
+    public BigDecimal balance() {
         return balance;
     }
 }

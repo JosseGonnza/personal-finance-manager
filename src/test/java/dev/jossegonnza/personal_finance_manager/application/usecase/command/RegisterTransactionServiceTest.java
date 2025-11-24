@@ -101,7 +101,7 @@ public class RegisterTransactionServiceTest {
         Transaction transaction = service.register(command);
 
         //Assert
-        assertEquals(new Money(new BigDecimal("1000.00"), CurrencyType.EUR),
+        assertEquals(new BigDecimal("1000.00"),
                 accountRepository.findById(command.accountId()).orElseThrow().balance());
     }
 
@@ -133,7 +133,7 @@ public class RegisterTransactionServiceTest {
         Transaction transactionExpense = service.register(commandExpense);
 
         //Assert
-        assertEquals(new Money(new BigDecimal("1.00"), CurrencyType.EUR),
+        assertEquals(new BigDecimal("1.00"),
                 accountRepository.findById(commandExpense.accountId()).orElseThrow().balance());
         assertEquals(TransactionType.EXPENSE, transactionExpense.type());
         assertEquals(new Money(new BigDecimal("999.00"), CurrencyType.EUR), transactionExpense.amount());

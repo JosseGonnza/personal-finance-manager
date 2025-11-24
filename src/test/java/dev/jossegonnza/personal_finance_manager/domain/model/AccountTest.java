@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AccountTest {
     @Test
-    void shouldCreateValidAccountWithBalance0() {
+    void shouldCreateValidAccountUpdateBalance0() {
         //Arrange
         UUID userId = UUID.randomUUID();
         String name = "Personal";
@@ -27,8 +27,8 @@ public class AccountTest {
         assertNotNull(account.id());
         assertEquals(userId, account.userId());
         assertEquals(name, account.name());
-        assertEquals(CurrencyType.EUR, account.type());
-        assertEquals(new Money(new BigDecimal("0.00"), currency), account.balance());
+        assertEquals(CurrencyType.EUR, account.currencyType());
+        assertEquals(new BigDecimal("0"), account.balance());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class AccountTest {
     }
 
     @Test
-    void shouldNotAcceptNullCurrencyType() {
+    void shouldNotAcceptNullCurrencyCurrencyType() {
         //Arrange
         UUID userId = UUID.randomUUID();
         String name = "Personal";
@@ -128,7 +128,7 @@ public class AccountTest {
                 LocalDateTime.of(2025, 2, 8, 10, 10));
 
         //Assert
-        assertEquals(new Money(new BigDecimal("10.00"), CurrencyType.EUR), account.balance());
+        assertEquals(new BigDecimal("10.00"), account.balance());
         assertEquals(account.id(), income.accountId());
         assertEquals(TransactionType.INCOME, income.type());
         assertEquals(incomeAmount, income.amount());
@@ -157,7 +157,7 @@ public class AccountTest {
                 LocalDateTime.of(2025, 2, 8, 10, 10));
 
         //Assert
-        assertEquals(new Money(new BigDecimal("90.00"), CurrencyType.EUR), account.balance());
+        assertEquals(new BigDecimal("90.00"), account.balance());
         assertEquals(account.id(), expense.accountId());
         assertEquals(TransactionType.EXPENSE, expense.type());
         assertEquals(expenseAmount, expense.amount());

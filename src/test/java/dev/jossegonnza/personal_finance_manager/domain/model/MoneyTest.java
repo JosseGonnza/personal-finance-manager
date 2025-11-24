@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MoneyTest {
 
     @Test
-    void shouldNotAllowCreationWithNegativeAmount() {
+    void shouldNotAllowCreationWithNegativeValue() {
         //Arrange
         BigDecimal negativeAmount = new BigDecimal("-10.00");
 
@@ -25,7 +25,7 @@ public class MoneyTest {
     }
 
     @Test
-    void shouldNotAcceptNullAmount() {
+    void shouldNotAcceptNullValue() {
         //Arrange
         String currency = "EUR";
 
@@ -62,7 +62,7 @@ public class MoneyTest {
         Money result = first.plus(second);
 
         //Assert
-        assertEquals(new BigDecimal("15.00"), result.amount());
+        assertEquals(new BigDecimal("15.00"), result.value());
         assertEquals(CurrencyType.EUR, result.type());
     }
 
@@ -105,7 +105,7 @@ public class MoneyTest {
         Money result = first.minus(second);
 
         //Assert
-        assertEquals(new BigDecimal("15.00"), result.amount());
+        assertEquals(new BigDecimal("15.00"), result.value());
         assertEquals(CurrencyType.EUR, result.type());
     }
 
@@ -126,7 +126,7 @@ public class MoneyTest {
     }
 
     @Test
-    void shouldNotAllowSubtractionResultingInNegativeAmount() {
+    void shouldNotAllowSubtractionResultingInNegativeValue() {
         //Arrange
         Money first = new Money(new BigDecimal("5.00"), CurrencyType.EUR);
         Money second = new Money(new BigDecimal("10.00"), CurrencyType.EUR);

@@ -29,6 +29,23 @@ public class Transaction {
         this.occurredAt = Objects.requireNonNull(occurredAt,"occurredAt cannot be null");
     }
 
+    public Transaction(UUID id,
+                       UUID accountId,
+                       TransactionType type,
+                       Money amount,
+                       UUID categoryId,
+                       String description,
+                       LocalDateTime occurredAt) {
+        this.id = id;
+        this.accountId = accountId;
+        this.transactionType = type;
+        this.amount = amount;
+        this.categoryId = categoryId;
+        this.description = description;
+        this.occurredAt = occurredAt;
+    }
+
+
     public UUID id() {
         return id;
     }

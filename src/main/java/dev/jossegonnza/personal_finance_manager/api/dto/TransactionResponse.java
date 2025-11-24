@@ -23,7 +23,7 @@ public record TransactionResponse(
                 transaction.id(),
                 transaction.accountId(),
                 transaction.type(),
-                transaction.amount().amount(),
+                transaction.amount().value(),
                 transaction.amount().type(),
                 transaction.categoryId(),
                 transaction.description(),

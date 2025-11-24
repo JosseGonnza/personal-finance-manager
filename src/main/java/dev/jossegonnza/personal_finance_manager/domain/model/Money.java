@@ -18,18 +18,14 @@ public class Money {
 
     public Money plus(Money other) {
         Objects.requireNonNull(other, "money to add cannot be null");
-        if (!this.currencyType.equals(other.currencyType)) {
-            throw new IllegalArgumentException("currencies must match");
-        }
+        validateCurrency(other);
         BigDecimal newAmount = this.amount.add(other.amount);
         return new Money(newAmount, this.currencyType);
     }
 
     public Money minus(Money other) {
         Objects.requireNonNull(other, "money to subtract cannot be null");
-        if (!this.currencyType.equals(other.currencyType)) {
-            throw new IllegalArgumentException("currencies must match");
-        }
+        validateCurrency(other);
         BigDecimal newAmount = this.amount.subtract(other.amount);
         if (newAmount.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("resulting money amount cannot be negative");
@@ -37,12 +33,18 @@ public class Money {
         return new Money(newAmount, this.currencyType);
     }
 
-    public BigDecimal amount() {
+    public BigDecimal value() {
         return amount;
     }
 
     public CurrencyType type() {
         return currencyType;
+    }
+
+    private void validateCurrency(Money other) {
+        if (!this.currencyType.equals(other.currencyType)) {
+            throw new IllegalArgumentException("currencies must match");
+        }
     }
 
     @Override

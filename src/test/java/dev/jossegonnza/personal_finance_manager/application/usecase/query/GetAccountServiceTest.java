@@ -4,7 +4,6 @@ import dev.jossegonnza.personal_finance_manager.application.exception.AccountNot
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetAccountUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.domain.model.CurrencyType;
-import dev.jossegonnza.personal_finance_manager.domain.model.Money;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryAccountRepository;
 import org.junit.jupiter.api.Test;
 
@@ -36,8 +35,8 @@ public class GetAccountServiceTest {
         assertEquals(existing.id(), account.id());
         assertEquals(existing.userId(), account.userId());
         assertEquals(existing.name(), account.name());
-        assertEquals(existing.type(), account.type());
-        assertEquals(new Money(new BigDecimal("0.00"), CurrencyType.EUR), account.balance());
+        assertEquals(existing.currencyType(), account.currencyType());
+        assertEquals(new BigDecimal("0"), account.balance());
     }
 
     @Test
