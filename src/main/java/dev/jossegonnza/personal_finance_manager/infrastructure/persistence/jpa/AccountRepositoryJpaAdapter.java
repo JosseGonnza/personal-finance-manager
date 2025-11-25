@@ -1,9 +1,7 @@
-package dev.jossegonnza.personal_finance_manager.infrastructure.persistence;
+package dev.jossegonnza.personal_finance_manager.infrastructure.persistence.jpa;
 
 import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
-import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.jpa.AccountEntity;
-import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.jpa.AccountJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

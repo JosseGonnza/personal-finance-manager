@@ -8,5 +8,4 @@ import java.util.UUID;
 public interface TransactionJpaRepository extends JpaRepository<TransactionEntity, UUID> {
     List<TransactionEntity> findByAccountId(UUID accountId);
     boolean existsByCategoryId(UUID categoryId);
-
 }

@@ -1,10 +1,8 @@
-package dev.jossegonnza.personal_finance_manager.infrastructure.persistence;
+package dev.jossegonnza.personal_finance_manager.infrastructure.persistence.jpa;
 
 import dev.jossegonnza.personal_finance_manager.application.port.out.TransactionRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.Money;
 import dev.jossegonnza.personal_finance_manager.domain.model.Transaction;
-import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.jpa.TransactionEntity;
-import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.jpa.TransactionJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
