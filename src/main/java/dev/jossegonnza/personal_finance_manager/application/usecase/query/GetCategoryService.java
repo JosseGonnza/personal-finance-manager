@@ -4,7 +4,6 @@ import dev.jossegonnza.personal_finance_manager.application.exception.CategoryNo
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.out.CategoryRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
-import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryCategoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

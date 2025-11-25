@@ -4,7 +4,6 @@ import dev.jossegonnza.personal_finance_manager.application.exception.AccountNot
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetAccountUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepository;
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
-import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.InMemoryAccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
