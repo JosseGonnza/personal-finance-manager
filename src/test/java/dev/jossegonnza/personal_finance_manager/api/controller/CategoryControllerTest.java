@@ -9,6 +9,7 @@ import dev.jossegonnza.personal_finance_manager.application.exception.UserNotFou
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.*;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetUserCategoriesUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.query.ListCategoryColorsUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryColor;
 import dev.jossegonnza.personal_finance_manager.domain.model.CategoryKind;
@@ -19,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,6 +52,9 @@ public class CategoryControllerTest {
 
     @MockitoBean
     private UpdateCategoryUseCase updateCategoryUseCase;
+
+    @MockitoBean
+    private ListCategoryColorsUseCase listCategoryColorsUseCase;
 
     @Test
     void shouldReturn201WhenCreateCategory() throws Exception {
@@ -309,4 +314,26 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.error").value("CATEGORY_NOT_FOUND"))
                 .andExpect(jsonPath("$.message").exists());
     }
+
+    @Test
+    void shouldReturnAvailableCategoryColors() throws Exception {
+        // Arrange
+        CategoryColor[] colors = CategoryColor.values();
+
+        when(listCategoryColorsUseCase.listAll())
+                .thenReturn(Arrays.asList(colors));
+
+        // Act + Assert
+        mockMvc.perform(get("/api/categories/colors"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                // tamaño del array
+                .andExpect(jsonPath("$.length()").value(colors.length))
+
+                // comprobamos el primer color para asegurar estructura
+                .andExpect(jsonPath("$[0].name").value(colors[0].name()))
+                .andExpect(jsonPath("$[0].hex").value(colors[0].hex()));
+    }
+
 }

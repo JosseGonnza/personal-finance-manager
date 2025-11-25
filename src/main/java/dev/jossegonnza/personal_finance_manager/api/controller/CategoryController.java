@@ -1,15 +1,15 @@
 package dev.jossegonnza.personal_finance_manager.api.controller;
 
-import dev.jossegonnza.personal_finance_manager.api.dto.ApiErrorResponse;
-import dev.jossegonnza.personal_finance_manager.api.dto.CategoryResponse;
-import dev.jossegonnza.personal_finance_manager.api.dto.CreateCategoryRequest;
-import dev.jossegonnza.personal_finance_manager.api.dto.UpdateCategoryRequest;
+import dev.jossegonnza.personal_finance_manager.api.dto.*;
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.*;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.in.query.GetUserCategoriesUseCase;
+import dev.jossegonnza.personal_finance_manager.application.port.in.query.ListCategoryColorsUseCase;
 import dev.jossegonnza.personal_finance_manager.domain.model.Category;
+import dev.jossegonnza.personal_finance_manager.domain.model.CategoryColor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,17 +32,20 @@ public class CategoryController {
     private final GetUserCategoriesUseCase getUserCategoriesUseCase;
     private final DeleteCategoryUseCase deleteCategoryUseCase;
     private final UpdateCategoryUseCase updateCategoryUseCase;
+    private final ListCategoryColorsUseCase listCategoryColorsUseCase;
 
     public CategoryController(CreateCategoryUseCase createCategoryUseCase,
                               GetCategoryUseCase getCategoryUseCase,
                               GetUserCategoriesUseCase getUserCategoriesUseCase,
                               DeleteCategoryUseCase deleteCategoryUseCase,
-                              UpdateCategoryUseCase updateCategoryUseCase) {
+                              UpdateCategoryUseCase updateCategoryUseCase,
+                              ListCategoryColorsUseCase listCategoryColorsUseCase) {
         this.createCategoryUseCase = createCategoryUseCase;
         this.getCategoryUseCase = getCategoryUseCase;
         this.getUserCategoriesUseCase = getUserCategoriesUseCase;
         this.deleteCategoryUseCase = deleteCategoryUseCase;
         this.updateCategoryUseCase = updateCategoryUseCase;
+        this.listCategoryColorsUseCase = listCategoryColorsUseCase;
     }
 
     @PostMapping
@@ -164,5 +167,28 @@ public class CategoryController {
 
         return ResponseEntity
                 .ok(CategoryResponse.fromDomain(updated));
+    }
+
+    @Operation(
+            summary = "List available category colors",
+            description = "Returns the predefined colors that can be used when creating or updating categories."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "List of available colors",
+            content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = CategoryColorResponse.class))
+            )
+    )
+    @GetMapping("/colors")
+    public ResponseEntity<List<CategoryColorResponse>> getAvailableColors() {
+        List<CategoryColor> colors = listCategoryColorsUseCase.listAll();
+
+        List<CategoryColorResponse> response = colors.stream()
+                .map(CategoryColorResponse::fromDomain)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }
