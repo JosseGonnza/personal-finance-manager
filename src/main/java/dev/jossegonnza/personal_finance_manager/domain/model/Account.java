@@ -24,6 +24,24 @@ public class Account {
         this.balance = BigDecimal.ZERO;
     }
 
+    public Account(UUID id,
+                   UUID userId,
+                   String name,
+                   CurrencyType currencyType,
+                   BigDecimal balance) {
+
+        String normalizedName = name == null ? null : name.trim();
+        if (normalizedName == null || normalizedName.isEmpty()) {
+            throw new IllegalArgumentException("name cannot be null or empty");
+        }
+
+        this.id = Objects.requireNonNull(id, "id cannot be null");
+        this.userId = Objects.requireNonNull(userId, "userId cannot be null");
+        this.name = normalizedName;
+        this.currencyType = Objects.requireNonNull(currencyType, "currencyType cannot be null");
+        this.balance = Objects.requireNonNull(balance, "balance cannot be null");
+    }
+
     public Transaction registerIncome(Money amount,
                                       UUID categoryId,
                                       String description,

@@ -30,14 +30,15 @@ public class AccountRepositoryJpaAdapter implements AccountRepository {
 
     //Mappers
     private Account toDomain(AccountEntity entity) {
-        Account account = new Account(
+        return new Account(
+                entity.getId(),
                 entity.getUserId(),
                 entity.getName(),
-                entity.getCurrencyType()
+                entity.getCurrencyType(),
+                entity.getBalance()
         );
-        account.updateBalance(entity.getBalance());
-        return account;
     }
+
 
     private AccountEntity toEntity(Account account) {
         return new AccountEntity(
