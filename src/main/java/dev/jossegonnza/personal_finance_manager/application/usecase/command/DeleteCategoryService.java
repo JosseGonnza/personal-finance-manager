@@ -5,7 +5,6 @@ import dev.jossegonnza.personal_finance_manager.application.exception.CategoryNo
 import dev.jossegonnza.personal_finance_manager.application.port.in.command.DeleteCategoryUseCase;
 import dev.jossegonnza.personal_finance_manager.application.port.out.CategoryRepository;
 import dev.jossegonnza.personal_finance_manager.application.port.out.TransactionRepository;
-import dev.jossegonnza.personal_finance_manager.domain.model.Category;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -20,13 +19,18 @@ public class DeleteCategoryService implements DeleteCategoryUseCase {
         this.transactionRepository = transactionRepository;
     }
 
+
     @Override
     public void deleteById(UUID categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+        boolean exists = categoryRepository.findById(categoryId).isPresent();
+        if (!exists) {
+            throw new CategoryNotFoundException(categoryId);
+        }
 
-        boolean inUse = transactionRepository.existsByCategoryId(categoryId);
-        if (inUse) throw new CategoryInUseException(categoryId);
+        if (transactionRepository.existsByCategoryId(categoryId)) {
+            throw new CategoryInUseException(categoryId);
+        }
+
         categoryRepository.deleteById(categoryId);
     }
 }
