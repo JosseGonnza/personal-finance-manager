@@ -4,12 +4,12 @@ import dev.jossegonnza.personal_finance_manager.application.port.out.AccountRepo
 import dev.jossegonnza.personal_finance_manager.domain.model.Account;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.jpa.AccountEntity;
 import dev.jossegonnza.personal_finance_manager.infrastructure.persistence.jpa.AccountJpaRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@Component
+@Repository
 public class AccountRepositoryJpaAdapter implements AccountRepository {
 
     private final AccountJpaRepository jpaRepository;
