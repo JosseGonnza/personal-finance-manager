@@ -3,6 +3,8 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/backend/target/
+*.bundle
 
 # Maven
 /target/
@@ -48,3 +50,20 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Java / Maven ###
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+### IntelliJ ###
+.idea/
+*.iml
+out/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/build/
