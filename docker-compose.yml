@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: pfm_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: pfm_db
+      POSTGRES_USER: pfm_user
+      POSTGRES_PASSWORD: pfm_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pfm_data:/var/lib/postgresql/data
+
+volumes:
+  pfm_data:
